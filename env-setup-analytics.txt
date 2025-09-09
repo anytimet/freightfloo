@@ -1,0 +1,24 @@
+# Google Analytics & SEO Environment Variables
+# Add these to your .env.local file
+
+# Google Analytics
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+
+# Base URL for SEO and sitemap
+NEXT_PUBLIC_BASE_URL=https://freightfloo.com
+
+# Optional: Google Search Console verification
+NEXT_PUBLIC_GSC_VERIFICATION=your-verification-code
+
+# Optional: Google Tag Manager
+NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
+
+# Instructions:
+# 1. Create a Google Analytics 4 property
+# 2. Get your Measurement ID (starts with G-)
+# 3. Add NEXT_PUBLIC_GA_ID to your .env.local
+# 4. Set your production domain in NEXT_PUBLIC_BASE_URL
+# 5. Deploy and verify tracking in Google Analytics
+
+# For development, you can use a test GA property or leave empty
+# Analytics will only work in production with a valid GA ID

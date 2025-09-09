@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  }
+  
+  .input-field {
+    @apply block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500;
+  }
+}
+
+@layer utilities {
+  /* Force proper icon sizing */
+  svg {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    max-width: none !important;
+    height: auto !important;
+  }
+  
+  /* Specific Heroicons sizing */
+  .h-4 svg, svg.h-4 {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+  
+  .h-5 svg, svg.h-5 {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+  
+  .h-6 svg, svg.h-6 {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+  
+  .h-8 svg, svg.h-8 {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+  
+  /* Force Tailwind size classes */
+  .h-4 { height: 1rem !important; }
+  .h-5 { height: 1.25rem !important; }
+  .h-6 { height: 1.5rem !important; }
+  .h-8 { height: 2rem !important; }
+  
+  .w-4 { width: 1rem !important; }
+  .w-5 { width: 1.25rem !important; }
+  .w-6 { width: 1.5rem !important; }
+  .w-8 { width: 2rem !important; }
+}

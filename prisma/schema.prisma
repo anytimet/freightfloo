@@ -1,0 +1,406 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      String @default("SHIPPER")
+  userType  String @default("INDIVIDUAL")
+  companyName String?
+  companyWebsite String?
+  companyPhone String?
+  companyAddress String?
+  companyCity String?
+  companyState String?
+  companyZipCode String?
+  companyCountry String?
+  dotNumber String?
+  mcNumber String?
+  carrierStatus String?
+  carrierVerified Boolean @default(false)
+  equipmentTypes String?
+  emailVerified Boolean @default(false)
+  emailVerificationToken String?
+  emailVerificationExpires DateTime?
+  passwordResetToken String?
+  passwordResetExpires DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  shipments Shipment[]
+  bids      Bid[]
+  reviewsAsReviewer Review[] @relation("Reviewer")
+  reviewsAsReviewee Review[] @relation("Reviewee")
+  notifications Notification[]
+  passwordResetTokens PasswordResetToken[]
+  payments Payment[]
+  refunds Refund[]
+  trucks Truck[]
+  drivers Driver[]
+  trips Trip[]
+  documents Document[]
+  questionsAsked Question[] @relation("QuestionAsker")
+  questionsAnswered Question[] @relation("QuestionAnswerer")
+  answers Answer[]
+
+  @@map("users")
+}
+
+model Shipment {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  origin      String
+  destination String
+  distance    Float?
+  weight      Float?
+  dimensions  String?
+  pickupDate  DateTime
+  deliveryDate DateTime?
+  budget      Float?
+  pricingType String @default("auction")
+  startingBid Float?
+  offerPrice  Float?
+  status      String @default("ACTIVE")
+  paymentStatus String @default("NONE") // NONE, PENDING, COMPLETED
+  category    String?
+  images      String?
+  
+  // Status Tracking
+  currentStatus String @default("PENDING") // PENDING, PICKED_UP, IN_TRANSIT, DELIVERED, COMPLETED
+  pickupTime   DateTime?
+  transitTime  DateTime?
+  deliveryTime DateTime?
+  completionTime DateTime?
+  podReceived  Boolean @default(false) // Proof of Delivery
+  podImage     String? // POD image URL
+  podNotes     String? // Delivery notes
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bids   Bid[]
+  notifications Notification[]
+  payments Payment[]
+  trips  Trip[]
+  documents Document[]
+  reviews Review[]
+  questions Question[]
+
+  @@map("shipments")
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  amount    Float
+  message   String?
+  status    String @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shipmentId String
+  shipment   Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  notifications Notification[]
+  payments Payment[]
+
+  @@map("bids")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // Overall rating 1-5
+  comment   String?
+  
+  // Detailed ratings for different aspects
+  communicationRating Int? // 1-5
+  timelinessRating    Int? // 1-5
+  professionalismRating Int? // 1-5
+  valueRating         Int? // 1-5
+  
+  // Review metadata
+  reviewType String @default("SHIPMENT") // SHIPMENT, GENERAL
+  isVerified Boolean @default(false) // Verified purchase/service
+  isPublic   Boolean @default(true) // Can be viewed publicly
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  reviewerId String
+  reviewer   User   @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  revieweeId String
+  reviewee   User   @relation("Reviewee", fields: [revieweeId], references: [id], onDelete: Cascade)
+  shipmentId String?
+  shipment   Shipment? @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
+  tripId     String?
+  trip       Trip? @relation(fields: [tripId], references: [id], onDelete: SetNull)
+
+  @@map("reviews")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // NEW_BID, BID_ACCEPTED, BID_REJECTED, PAYMENT_COMPLETED, SHIPMENT_ASSIGNED
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shipmentId String?
+  shipment   Shipment? @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  bidId String?
+  bid   Bid? @relation(fields: [bidId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  amount          Float
+  currency        String   @default("USD")
+  status          String   // PENDING, COMPLETED, FAILED, REFUNDED
+  stripePaymentIntentId String?
+  stripeChargeId  String?
+  description     String?
+  metadata        String?  // JSON string for additional data
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shipmentId String
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  bidId String?
+  bid   Bid? @relation(fields: [bidId], references: [id], onDelete: SetNull)
+  refunds Refund[]
+
+  @@map("payments")
+}
+
+model Refund {
+  id              String   @id @default(cuid())
+  amount          Float
+  currency        String   @default("USD")
+  status          String   // PENDING, COMPLETED, FAILED
+  reason          String   // DISPUTE, CANCELLATION, ERROR, OTHER
+  description     String?
+  stripeRefundId  String?
+  metadata        String?  // JSON string for additional data
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  paymentId String
+  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  requestedById String
+  requestedBy User @relation(fields: [requestedById], references: [id], onDelete: Cascade)
+  
+  @@map("refunds")
+}
+
+model Truck {
+  id          String   @id @default(cuid())
+  make        String   // e.g., "Freightliner", "Peterbilt"
+  model       String   // e.g., "Cascadia", "579"
+  year        Int
+  vin         String   @unique
+  licensePlate String  @unique
+  truckType   String   // "SEMI", "BOX_TRUCK", "FLATBED", "REEFER", "TANKER"
+  capacity    Float    // in tons or cubic feet
+  maxWeight   Float    // in pounds
+  length      Float?   // in feet
+  width       Float?   // in feet
+  height      Float?   // in feet
+  fuelType    String   // "DIESEL", "GAS", "ELECTRIC", "HYBRID"
+  status      String   @default("AVAILABLE") // "AVAILABLE", "IN_USE", "MAINTENANCE", "OUT_OF_SERVICE"
+  location    String?  // Current location
+  latitude    Float?
+  longitude   Float?
+  lastMaintenance DateTime?
+  nextMaintenance DateTime?
+  mileage     Int      @default(0)
+  insuranceExpiry DateTime?
+  registrationExpiry DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  trips   Trip[]
+
+  @@map("trucks")
+}
+
+model Driver {
+  id              String   @id @default(cuid())
+  firstName       String
+  lastName        String
+  email           String   @unique
+  phone           String
+  licenseNumber   String   @unique
+  licenseClass    String   // "CDL_A", "CDL_B", "CDL_C"
+  licenseExpiry   DateTime
+  medicalCardExpiry DateTime
+  twicCardExpiry  DateTime?
+  hazmatEndorsement Boolean @default(false)
+  tankerEndorsement Boolean @default(false)
+  doublesTriplesEndorsement Boolean @default(false)
+  passengerEndorsement Boolean @default(false)
+  schoolBusEndorsement Boolean @default(false)
+  status          String   @default("AVAILABLE") // "AVAILABLE", "ON_TRIP", "OFF_DUTY", "SUSPENDED"
+  currentLocation String?
+  latitude        Float?
+  longitude       Float?
+  hoursOfService  Int      @default(0) // Current hours worked
+  maxHoursOfService Int    @default(70) // Max hours per week
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  carrierId String
+  carrier   User   @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+  trips     Trip[]
+
+  @@map("drivers")
+}
+
+model Trip {
+  id              String   @id @default(cuid())
+  tripNumber      String   @unique
+  status          String   @default("PLANNED") // "PLANNED", "IN_PROGRESS", "COMPLETED", "CANCELLED"
+  startLocation   String
+  endLocation     String
+  startLatitude   Float?
+  startLongitude  Float?
+  endLatitude     Float?
+  endLongitude    Float?
+  distance        Float?   // in miles
+  estimatedDuration Int?   // in minutes
+  actualDuration  Int?     // in minutes
+  plannedStartTime DateTime
+  actualStartTime DateTime?
+  plannedEndTime  DateTime
+  actualEndTime   DateTime?
+  fuelCost        Float?
+  tollCost        Float?
+  otherExpenses   Float?
+  totalCost       Float?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  carrierId String
+  carrier   User   @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+  truckId   String
+  truck     Truck  @relation(fields: [truckId], references: [id], onDelete: Cascade)
+  driverId  String
+  driver    Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  shipmentId String?
+  shipment  Shipment? @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
+  documents Document[]
+  reviews Review[]
+
+  @@map("trips")
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  fileName    String
+  fileUrl     String
+  fileSize    Int      // in bytes
+  fileType    String   // MIME type
+  category    String   // "BILL_OF_LADING", "INSURANCE", "PERMIT", "INVOICE", "RECEIPT", "OTHER"
+  isPublic    Boolean  @default(false) // Can be viewed by other party
+  isRequired  Boolean  @default(false) // Required document
+  uploadedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+  shipmentId   String?
+  shipment     Shipment? @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  tripId       String?
+  trip         Trip? @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@map("documents")
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  isPublic    Boolean  @default(false) // Can be viewed by other party
+  isAnswered  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  askerId String
+  asker   User   @relation("QuestionAsker", fields: [askerId], references: [id], onDelete: Cascade)
+  answererId String?
+  answerer User? @relation("QuestionAnswerer", fields: [answererId], references: [id], onDelete: SetNull)
+  shipmentId String?
+  shipment Shipment? @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  answers Answer[]
+
+  @@map("questions")
+}
+
+model Answer {
+  id        String   @id @default(cuid())
+  content   String
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answererId String
+  answerer   User   @relation(fields: [answererId], references: [id], onDelete: Cascade)
+
+  @@map("answers")
+}
+
+
