@@ -188,7 +188,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate time-based revenue
-    const monthlyRevenue = payments.filter(payment => {
+    const monthlyRevenue = payments.filter((payment: any) => {
       const paymentDate = new Date(payment.createdAt)
       const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1)
       return paymentDate >= currentMonth
