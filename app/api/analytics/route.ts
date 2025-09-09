@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
         payment.createdAt >= monthStart && payment.createdAt <= monthEnd
       ).reduce((sum: number, payment: any) => sum + payment.amount, 0)
 
-      const monthMileage = monthTrips.reduce((sum, trip) => sum + (trip.distance || 0), 0)
+      const monthMileage = monthTrips.reduce((sum: number, trip: any) => sum + (trip.distance || 0), 0)
 
       monthlyData.push({
         month: monthStart.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
