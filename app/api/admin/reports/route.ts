@@ -175,11 +175,11 @@ export async function GET(request: NextRequest) {
     })).sort((a: any, b: any) => b.totalRevenue - a.totalRevenue)
 
     // Process top shippers
-    const processedTopShippers = topShippers.map(shipper => ({
+    const processedTopShippers = topShippers.map((shipper: any) => ({
       name: shipper.name || 'Unknown',
       totalShipments: shipper.shipments.length,
-      totalSpent: shipper.payments.reduce((sum, payment) => sum + payment.amount, 0)
-    })).sort((a, b) => b.totalSpent - a.totalSpent)
+      totalSpent: shipper.payments.reduce((sum: number, payment: any) => sum + payment.amount, 0)
+    })).sort((a: any, b: any) => b.totalSpent - a.totalSpent)
 
     const reportData = {
       totalRevenue: totalRevenue._sum.amount || 0,
