@@ -10,8 +10,6 @@ import {
   ClipboardDocumentListIcon,
   TruckIcon,
   CalendarIcon,
-  TrendingUpIcon,
-  TrendingDownIcon
 } from '@heroicons/react/24/outline'
 
 interface ReportData {
@@ -134,9 +132,9 @@ export default function AdminReportsPage() {
               </p>
               <div className="flex items-center mt-1">
                 {reportData.revenueGrowth >= 0 ? (
-                  <TrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                  <span className="text-green-500 mr-1">↗</span>
                 ) : (
-                  <TrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
+                  <span className="text-red-500 mr-1">↘</span>
                 )}
                 <span className={`text-sm ${
                   reportData.revenueGrowth >= 0 ? 'text-green-600' : 'text-red-600'
@@ -160,9 +158,9 @@ export default function AdminReportsPage() {
               </p>
               <div className="flex items-center mt-1">
                 {reportData.userGrowth >= 0 ? (
-                  <TrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                  <span className="text-green-500 mr-1">↗</span>
                 ) : (
-                  <TrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
+                  <span className="text-red-500 mr-1">↘</span>
                 )}
                 <span className={`text-sm ${
                   reportData.userGrowth >= 0 ? 'text-green-600' : 'text-red-600'
@@ -186,9 +184,9 @@ export default function AdminReportsPage() {
               </p>
               <div className="flex items-center mt-1">
                 {reportData.shipmentGrowth >= 0 ? (
-                  <TrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                  <span className="text-green-500 mr-1">↗</span>
                 ) : (
-                  <TrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
+                  <span className="text-red-500 mr-1">↘</span>
                 )}
                 <span className={`text-sm ${
                   reportData.shipmentGrowth >= 0 ? 'text-green-600' : 'text-red-600'

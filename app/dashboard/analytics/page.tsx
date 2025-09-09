@@ -9,8 +9,6 @@ import {
   UserGroupIcon,
   ClockIcon,
   MapIcon,
-  TrendingUpIcon,
-  TrendingDownIcon
 } from '@heroicons/react/24/outline'
 
 interface AnalyticsData {
@@ -99,9 +97,9 @@ export default function AnalyticsPage() {
 
   const getGrowthIcon = (growth: number) => {
     return growth >= 0 ? (
-      <TrendingUpIcon className="h-4 w-4 text-green-500" />
+      <span className="text-green-500 mr-1">↗</span>
     ) : (
-      <TrendingDownIcon className="h-4 w-4 text-red-500" />
+      <span className="text-red-500 mr-1">↘</span>
     )
   }
 
