@@ -1,6 +1,12 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Initialize Resend only when API key is available
+const getResendClient = () => {
+  if (!process.env.RESEND_API_KEY) {
+    return null
+  }
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 export interface EmailNotification {
   to: string
@@ -10,7 +16,8 @@ export interface EmailNotification {
 
 export async function sendEmail({ to, subject, html }: EmailNotification) {
   try {
-    if (!process.env.RESEND_API_KEY) {
+    const resend = getResendClient()
+    if (!resend) {
       console.log('Email not sent - RESEND_API_KEY not configured')
       return { success: false, error: 'Email service not configured' }
     }
