@@ -169,7 +169,7 @@ export async function GET(request: NextRequest) {
     const processedTopCarriers = topCarriers.map((carrier: any) => ({
       name: carrier.name || 'Unknown',
       totalBids: carrier.bids.length,
-      totalRevenue: carrier.bids.reduce((sum, bid) => 
+      totalRevenue: carrier.bids.reduce((sum: number, bid: any) => 
         sum + (bid.payments?.[0]?.amount || 0), 0
       )
     })).sort((a, b) => b.totalRevenue - a.totalRevenue)
