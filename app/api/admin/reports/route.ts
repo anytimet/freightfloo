@@ -172,7 +172,7 @@ export async function GET(request: NextRequest) {
       totalRevenue: carrier.bids.reduce((sum: number, bid: any) => 
         sum + (bid.payments?.[0]?.amount || 0), 0
       )
-    })).sort((a, b) => b.totalRevenue - a.totalRevenue)
+    })).sort((a: any, b: any) => b.totalRevenue - a.totalRevenue)
 
     // Process top shippers
     const processedTopShippers = topShippers.map(shipper => ({
