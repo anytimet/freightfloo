@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { stripe } from '@/lib/stripe'
+import { getStripeClient } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +10,14 @@ export async function POST(request: NextRequest) {
     
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const stripe = getStripeClient()
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Stripe is not configured. Please add STRIPE_SECRET_KEY to environment variables.' },
+        { status: 500 }
+      )
     }
 
     const { paymentId, amount, reason, description } = await request.json()

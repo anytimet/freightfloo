@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { getStripeClient } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import { sendEmail, createEmailTemplate } from '@/lib/email'
 import Stripe from 'stripe'
@@ -11,6 +11,11 @@ export async function POST(request: NextRequest) {
   const signature = request.headers.get('stripe-signature')!
 
   let event: Stripe.Event
+
+  const stripe = getStripeClient()
+  if (!stripe) {
+    return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 })
+  }
 
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret)

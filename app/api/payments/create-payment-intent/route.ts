@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { stripe, formatAmountForStripe } from '@/lib/stripe'
+import { getStripeClient, formatAmountForStripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import { validatePaymentSecurity, checkRateLimit, logSuspiciousActivity } from '@/lib/payment-security'
 
@@ -14,7 +14,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if Stripe is configured
-    if (!process.env.STRIPE_SECRET_KEY) {
+    const stripe = getStripeClient()
+    if (!stripe) {
       return NextResponse.json(
         { error: 'Stripe is not configured. Please add STRIPE_SECRET_KEY to environment variables.' },
         { status: 500 }

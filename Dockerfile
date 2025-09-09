@@ -1,5 +1,5 @@
-# Use the official Node.js 18 image
-FROM node:18-alpine
+# Use the official Node.js 18 image with OpenSSL support
+FROM node:18-slim
 
 # Set working directory
 WORKDIR /app
