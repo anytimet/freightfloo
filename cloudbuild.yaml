@@ -1,19 +1,23 @@
 steps:
   # Deploy to Cloud Run using source
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: "gcr.io/cloud-builders/gcloud"
     args:
-      - 'run'
-      - 'deploy'
-      - 'freightfloo-app'
-      - '--source'
-      - '.'
-      - '--platform'
-      - 'managed'
-      - '--region'
-      - 'us-central1'
-      - '--allow-unauthenticated'
-      - '--port'
-      - '3000'
+      - "run"
+      - "deploy"
+      - "freightfloo-app"
+      - "--source"
+      - "."
+      - "--platform"
+      - "managed"
+      - "--region"
+      - "us-central1"
+      - "--allow-unauthenticated"
+      - "--port"
+      - "3000"
+      - "--min-instances"
+      - "1"
+      - "--max-instances"
+      - "10"
 
 options:
   logging: CLOUD_LOGGING_ONLY
