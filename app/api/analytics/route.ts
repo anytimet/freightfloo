@@ -192,7 +192,7 @@ export async function GET(request: NextRequest) {
       const paymentDate = new Date(payment.createdAt)
       const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1)
       return paymentDate >= currentMonth
-    }).reduce((sum, payment) => sum + payment.amount, 0)
+    }).reduce((sum: number, payment: any) => sum + payment.amount, 0)
 
     const weeklyRevenue = payments.filter(payment => {
       const paymentDate = new Date(payment.createdAt)
