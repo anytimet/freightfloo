@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Filter questions based on visibility
-    const visibleQuestions = questions.filter(question => {
+    const visibleQuestions = questions.filter((question: any) => {
       return question.isPublic || 
              question.asker.id === userId || 
              question.answererId === userId
