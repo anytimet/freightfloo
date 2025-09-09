@@ -110,10 +110,10 @@ export async function GET(request: NextRequest) {
       : 0
 
     // Calculate trip metrics
-    const completedTrips = currentTrips.filter(trip => trip.status === 'COMPLETED')
-    const inProgressTrips = currentTrips.filter(trip => trip.status === 'IN_PROGRESS')
+    const completedTrips = currentTrips.filter((trip: any) => trip.status === 'COMPLETED')
+    const inProgressTrips = currentTrips.filter((trip: any) => trip.status === 'IN_PROGRESS')
     const averageDuration = completedTrips.length > 0
-      ? completedTrips.reduce((sum, trip) => sum + (trip.actualDuration || 0), 0) / completedTrips.length
+      ? completedTrips.reduce((sum: number, trip: any) => sum + (trip.actualDuration || 0), 0) / completedTrips.length
       : 0
 
     const tripGrowth = previousTrips.length > 0
