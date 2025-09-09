@@ -121,7 +121,7 @@ export async function GET(request: NextRequest) {
         include: {
           bids: {
             include: {
-              payment: {
+              payments: {
                 where: { status: 'COMPLETED' }
               }
             }
@@ -166,11 +166,11 @@ export async function GET(request: NextRequest) {
     const conversionRate = totalShipments > 0 ? (completedShipments / totalShipments) * 100 : 0
 
     // Process top carriers
-    const processedTopCarriers = topCarriers.map(carrier => ({
+    const processedTopCarriers = topCarriers.map((carrier: any) => ({
       name: carrier.name || 'Unknown',
       totalBids: carrier.bids.length,
       totalRevenue: carrier.bids.reduce((sum, bid) => 
-        sum + (bid.payment?.amount || 0), 0
+        sum + (bid.payments?.[0]?.amount || 0), 0
       )
     })).sort((a, b) => b.totalRevenue - a.totalRevenue)
 
