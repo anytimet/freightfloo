@@ -128,10 +128,10 @@ export async function GET(request: NextRequest) {
       : 0
 
     // Calculate driver metrics
-    const availableDrivers = drivers.filter(driver => driver.status === 'AVAILABLE').length
-    const onTripDrivers = drivers.filter(driver => driver.status === 'ON_TRIP').length
+    const availableDrivers = drivers.filter((driver: any) => driver.status === 'AVAILABLE').length
+    const onTripDrivers = drivers.filter((driver: any) => driver.status === 'ON_TRIP').length
     const averageHours = drivers.length > 0
-      ? drivers.reduce((sum, driver) => sum + driver.hoursOfService, 0) / drivers.length
+      ? drivers.reduce((sum: number, driver: any) => sum + driver.hoursOfService, 0) / drivers.length
       : 0
 
     // Generate monthly data (last 12 months)
