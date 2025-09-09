@@ -22,9 +22,8 @@ export async function GET(request: NextRequest) {
         name: true,
         email: true,
         role: true,
-        isVerified: true,
+        carrierVerified: true,
         createdAt: true,
-        lastLoginAt: true,
         shipments: {
           select: {
             id: true
@@ -56,9 +55,8 @@ export async function GET(request: NextRequest) {
       name: user.name,
       email: user.email,
       role: user.role,
-      isVerified: user.isVerified,
+      isVerified: user.carrierVerified,
       createdAt: user.createdAt.toISOString(),
-      lastLoginAt: user.lastLoginAt?.toISOString(),
       totalShipments: user.shipments.length,
       totalBids: user.bids.length,
       totalRevenue: user.payments.reduce((sum, payment) => sum + payment.amount, 0)

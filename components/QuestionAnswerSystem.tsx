@@ -189,14 +189,14 @@ export default function QuestionAnswerSystem({
 
   const canAnswerQuestion = (question: Question) => {
     return question.asker.id !== (session?.user as any)?.id && 
-           question.answererId === (session?.user as any)?.id
+            question.answerer?.id === (session?.user as any)?.id
   }
 
   const canViewQuestion = (question: Question) => {
     const userId = (session?.user as any)?.id
     return question.isPublic || 
            question.asker.id === userId || 
-           question.answererId === userId
+            question.answerer?.id === userId
   }
 
   if (loading) {

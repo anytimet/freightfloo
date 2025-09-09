@@ -85,7 +85,7 @@ export default function UserProfileReviews({
         totalReviews={reviewData.totalReviews}
         ratingBreakdown={reviewData.ratingBreakdown}
         userRole={userRole}
-        showWriteReview={canWriteReview && session?.user}
+        showWriteReview={canWriteReview && !!session?.user}
         onWriteReview={handleWriteReview}
       />
 

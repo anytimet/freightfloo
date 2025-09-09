@@ -31,22 +31,22 @@ const render = (status: Status) => {
         </div>
       )
     default:
-      return null
+      return <div>Loading...</div>
   }
 }
 
 function MapComponent({ origin, destination, onDistanceDuration }: GoogleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<google.maps.Map | null>(null)
-  const [directionsService, setDirectionsService] = useState<google.maps.DirectionsService | null>(null)
-  const [directionsRenderer, setDirectionsRenderer] = useState<google.maps.DirectionsRenderer | null>(null)
-  const [autocompleteService, setAutocompleteService] = useState<google.maps.places.AutocompleteService | null>(null)
-  const [placesService, setPlacesService] = useState<google.maps.places.PlacesService | null>(null)
+  const [map, setMap] = useState<any>(null)
+  const [directionsService, setDirectionsService] = useState<any>(null)
+  const [directionsRenderer, setDirectionsRenderer] = useState<any>(null)
+  const [autocompleteService, setAutocompleteService] = useState<any>(null)
+  const [placesService, setPlacesService] = useState<any>(null)
 
   useEffect(() => {
     if (!mapRef.current) return
 
-    const googleMap = new google.maps.Map(mapRef.current, {
+    const googleMap = new (window as any).google.maps.Map(mapRef.current, {
       zoom: 6,
       center: { lat: 39.8283, lng: -98.5795 }, // Center of US
       mapTypeControl: true,
@@ -55,14 +55,14 @@ function MapComponent({ origin, destination, onDistanceDuration }: GoogleMapProp
       zoomControl: true,
     })
 
-    const directionsServiceInstance = new google.maps.DirectionsService()
-    const directionsRendererInstance = new google.maps.DirectionsRenderer({
+    const directionsServiceInstance = new (window as any).google.maps.DirectionsService()
+    const directionsRendererInstance = new (window as any).google.maps.DirectionsRenderer({
       draggable: false,
       suppressMarkers: false,
     })
 
-    const autocompleteServiceInstance = new google.maps.places.AutocompleteService()
-    const placesServiceInstance = new google.maps.places.PlacesService(googleMap)
+    const autocompleteServiceInstance = new (window as any).google.maps.places.AutocompleteService()
+    const placesServiceInstance = new (window as any).google.maps.places.PlacesService(googleMap)
 
     setMap(googleMap)
     setDirectionsService(directionsServiceInstance)
@@ -80,17 +80,17 @@ function MapComponent({ origin, destination, onDistanceDuration }: GoogleMapProp
   useEffect(() => {
     if (!directionsService || !directionsRenderer || !origin || !destination) return
 
-    const request: google.maps.DirectionsRequest = {
+    const request: any = {
       origin: origin,
       destination: destination,
-      travelMode: google.maps.TravelMode.DRIVING,
-      unitSystem: google.maps.UnitSystem.IMPERIAL,
+      travelMode: (window as any).google.maps.TravelMode.DRIVING,
+      unitSystem: (window as any).google.maps.UnitSystem.IMPERIAL,
       avoidHighways: false,
       avoidTolls: false,
     }
 
-    directionsService.route(request, (result, status) => {
-      if (status === google.maps.DirectionsStatus.OK && result) {
+    directionsService.route(request, (result: any, status: any) => {
+      if (status === (window as any).google.maps.DirectionsStatus.OK && result) {
         directionsRenderer.setDirections(result)
         
         const route = result.routes[0]

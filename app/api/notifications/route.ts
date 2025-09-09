@@ -83,7 +83,6 @@ export async function POST(request: NextRequest) {
         type,
         title,
         message,
-        data: data ? JSON.stringify(data) : null,
         shipmentId: shipmentId || null,
         bidId: bidId || null
       }

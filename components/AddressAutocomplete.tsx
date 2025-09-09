@@ -8,7 +8,7 @@ interface AddressAutocompleteProps {
   onChange: (value: string) => void
   placeholder?: string
   className?: string
-  onPlaceSelect?: (place: google.maps.places.PlaceResult) => void
+  onPlaceSelect?: (place: any) => void
 }
 
 const render = (status: Status) => {
@@ -36,19 +36,19 @@ const render = (status: Status) => {
         </div>
       )
     default:
-      return null
+      return <div>Loading...</div>
   }
 }
 
 function AutocompleteComponent({ value, onChange, placeholder, className, onPlaceSelect }: AddressAutocompleteProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
+  const autocompleteRef = useRef<any>(null)
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     if (!inputRef.current || isLoaded) return
 
-    const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
+    const autocomplete = new (window as any).google.maps.places.Autocomplete(inputRef.current, {
       types: ['address'],
       componentRestrictions: { country: 'us' },
       fields: ['formatted_address', 'geometry', 'name', 'place_id']
@@ -70,7 +70,7 @@ function AutocompleteComponent({ value, onChange, placeholder, className, onPlac
 
     return () => {
       if (autocompleteRef.current) {
-        google.maps.event.clearInstanceListeners(autocompleteRef.current)
+        (window as any).google.maps.event.clearInstanceListeners(autocompleteRef.current)
       }
     }
   }, [onChange, onPlaceSelect, isLoaded])

@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
       prisma.user.count({
         where: {
           role: 'CARRIER',
-          isVerified: false
+          carrierVerified: false
         }
       }),
       

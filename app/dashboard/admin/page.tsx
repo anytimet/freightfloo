@@ -34,7 +34,21 @@ interface AdminStats {
 
 export default function AdminDashboardPage() {
   const { data: session } = useSession()
-  const [stats, setStats] = useState<AdminStats>({})
+  const [stats, setStats] = useState<AdminStats>({
+    totalUsers: 0,
+    totalShipments: 0,
+    activeShipments: 0,
+    completedShipments: 0,
+    totalBids: 0,
+    totalRevenue: 0,
+    monthlyRevenue: 0,
+    totalCarriers: 0,
+    totalShippers: 0,
+    pendingApprovals: 0,
+    systemAlerts: 0,
+    averageBidAmount: 0,
+    conversionRate: 0
+  })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

@@ -19,7 +19,6 @@ export class NotificationService {
           type: notificationData.type,
           title: notificationData.title,
           message: notificationData.message,
-          data: notificationData.data ? JSON.stringify(notificationData.data) : null,
           shipmentId: notificationData.shipmentId || null,
           bidId: notificationData.bidId || null
         }

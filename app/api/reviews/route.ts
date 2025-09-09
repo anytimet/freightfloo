@@ -255,11 +255,6 @@ export async function POST(request: NextRequest) {
         type: 'NEW_REVIEW',
         title: 'New Review Received',
         message: `You received a ${rating}-star review from ${(session.user as any).name}`,
-        data: JSON.stringify({
-          reviewId: review.id,
-          rating: rating,
-          reviewerName: (session.user as any).name
-        })
       }
     })
 

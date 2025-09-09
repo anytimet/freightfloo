@@ -170,11 +170,6 @@ export async function logSuspiciousActivity(
         title: 'Suspicious Payment Activity',
         message: `Security alert: ${activity}`,
         userId,
-        metadata: JSON.stringify({
-          activity,
-          details,
-          timestamp: new Date().toISOString()
-        })
       }
     })
   } catch (error) {
