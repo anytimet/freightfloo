@@ -68,10 +68,10 @@ export async function GET(request: NextRequest) {
     // Calculate rating statistics
     const totalReviews = reviews.length
     const averageRating = totalReviews > 0 
-      ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews 
+      ? reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / totalReviews 
       : 0
 
-    const ratingBreakdown = reviews.reduce((acc, review) => {
+    const ratingBreakdown = reviews.reduce((acc: { [key: string]: number }, review: any) => {
       acc[review.rating] = (acc[review.rating] || 0) + 1
       return acc
     }, {} as { [key: string]: number })
