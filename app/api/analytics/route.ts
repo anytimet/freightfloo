@@ -160,7 +160,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate top routes
     const routeMap = new Map()
-    currentTrips.forEach(trip => {
+    currentTrips.forEach((trip: any) => {
       const route = `${trip.startLocation} → ${trip.endLocation}`
       if (routeMap.has(route)) {
         const existing = routeMap.get(route)
