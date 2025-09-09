@@ -61,7 +61,7 @@ export async function PUT(
 
     // Check if user has permission to update status
     const isShipper = shipment.userId === (session.user as any).id
-    const isCarrier = shipment.bids.some(bid => bid.userId === (session.user as any).id)
+    const isCarrier = shipment.bids.some((bid: any) => bid.userId === (session.user as any).id)
 
     if (!isShipper && !isCarrier) {
       return NextResponse.json(
