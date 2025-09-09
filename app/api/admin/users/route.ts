@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
       createdAt: user.createdAt.toISOString(),
       totalShipments: user.shipments.length,
       totalBids: user.bids.length,
-      totalRevenue: user.payments.reduce((sum, payment) => sum + payment.amount, 0)
+      totalRevenue: user.payments.reduce((sum: number, payment: any) => sum + payment.amount, 0)
     }))
 
     return NextResponse.json(usersWithStats)
