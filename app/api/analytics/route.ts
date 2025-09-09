@@ -144,9 +144,9 @@ export async function GET(request: NextRequest) {
         trip.createdAt >= monthStart && trip.createdAt <= monthEnd
       )
       
-      const monthRevenue = payments.filter(payment =>
+      const monthRevenue = payments.filter((payment: any) =>
         payment.createdAt >= monthStart && payment.createdAt <= monthEnd
-      ).reduce((sum, payment) => sum + payment.amount, 0)
+      ).reduce((sum: number, payment: any) => sum + payment.amount, 0)
 
       const monthMileage = monthTrips.reduce((sum, trip) => sum + (trip.distance || 0), 0)
 
