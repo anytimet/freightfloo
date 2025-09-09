@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
       const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1)
       const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0)
       
-      const monthTrips = currentTrips.filter(trip => 
+      const monthTrips = currentTrips.filter((trip: any) =>
         trip.createdAt >= monthStart && trip.createdAt <= monthEnd
       )
       
