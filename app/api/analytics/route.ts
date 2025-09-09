@@ -121,10 +121,10 @@ export async function GET(request: NextRequest) {
       : 0
 
     // Calculate fleet metrics
-    const availableTrucks = trucks.filter(truck => truck.status === 'AVAILABLE').length
+    const availableTrucks = trucks.filter((truck: any) => truck.status === 'AVAILABLE').length
     const utilizationRate = trucks.length > 0 ? ((trucks.length - availableTrucks) / trucks.length) * 100 : 0
     const averageMileage = trucks.length > 0
-      ? trucks.reduce((sum, truck) => sum + truck.mileage, 0) / trucks.length
+      ? trucks.reduce((sum: number, truck: any) => sum + truck.mileage, 0) / trucks.length
       : 0
 
     // Calculate driver metrics
