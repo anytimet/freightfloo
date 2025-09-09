@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Calculate additional stats for each user
-    const usersWithStats = users.map(user => ({
+    const usersWithStats = users.map((user: any) => ({
       id: user.id,
       name: user.name,
       email: user.email,
