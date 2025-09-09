@@ -194,17 +194,17 @@ export async function GET(request: NextRequest) {
       return paymentDate >= currentMonth
     }).reduce((sum: number, payment: any) => sum + payment.amount, 0)
 
-    const weeklyRevenue = payments.filter(payment => {
+    const weeklyRevenue = payments.filter((payment: any) => {
       const paymentDate = new Date(payment.createdAt)
       const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
       return paymentDate >= weekAgo
-    }).reduce((sum, payment) => sum + payment.amount, 0)
+    }).reduce((sum: number, payment: any) => sum + payment.amount, 0)
 
-    const dailyRevenue = payments.filter(payment => {
+    const dailyRevenue = payments.filter((payment: any) => {
       const paymentDate = new Date(payment.createdAt)
       const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
       return paymentDate >= yesterday
-    }).reduce((sum, payment) => sum + payment.amount, 0)
+    }).reduce((sum: number, payment: any) => sum + payment.amount, 0)
 
     const analytics = {
       revenue: {
