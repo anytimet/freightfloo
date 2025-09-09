@@ -77,8 +77,8 @@ export async function validatePaymentSecurity(
     })
 
     const totalRecentPayments = recentPayments
-      .filter(p => p.status === 'COMPLETED')
-      .reduce((sum, p) => sum + p.amount, 0)
+      .filter((p: any) => p.status === 'COMPLETED')
+      .reduce((sum: number, p: any) => sum + p.amount, 0)
 
     const dailyLimit = 5000 // $5,000 daily limit
     if (totalRecentPayments + amount > dailyLimit) {
