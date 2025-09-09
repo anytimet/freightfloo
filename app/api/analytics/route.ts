@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     ])
 
     // Calculate revenue metrics
-    const totalRevenue = payments.reduce((sum, payment) => sum + payment.amount, 0)
+    const totalRevenue = payments.reduce((sum: number, payment: any) => sum + payment.amount, 0)
     const previousRevenue = await prisma.payment.aggregate({
       where: {
         bid: {
