@@ -1,20 +1,5 @@
 steps:
-  # Install pnpm
-  - name: 'gcr.io/cloud-builders/npm'
-    entrypoint: 'npm'
-    args: ['install', '-g', 'pnpm']
-
-  # Install dependencies
-  - name: 'gcr.io/cloud-builders/npm'
-    entrypoint: 'pnpm'
-    args: ['install']
-
-  # Build the Next.js application
-  - name: 'gcr.io/cloud-builders/npm'
-    entrypoint: 'pnpm'
-    args: ['build']
-
-  # Deploy to Cloud Run
+  # Deploy to Cloud Run using source
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
@@ -27,6 +12,8 @@ steps:
       - '--region'
       - 'us-central1'
       - '--allow-unauthenticated'
+      - '--port'
+      - '3000'
 
 options:
   logging: CLOUD_LOGGING_ONLY

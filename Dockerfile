@@ -22,5 +22,8 @@ RUN pnpm build
 # Expose port
 EXPOSE 3000
 
+# Set environment variable for production
+ENV NODE_ENV=production
+
 # Start the application
 CMD ["pnpm", "start"]
