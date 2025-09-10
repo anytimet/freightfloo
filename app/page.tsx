@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import SocialShare from '@/components/SocialShare'
 import { 
   TruckIcon, 
   ClockIcon, 
@@ -49,6 +50,14 @@ export default function HomePage() {
               <Link href="/marketplace" className="border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold py-3 px-8 rounded-lg text-lg transition-colors">
                 Browse Shipments
               </Link>
+            </div>
+            
+            <div className="mt-8 flex justify-center">
+              <SocialShare 
+                title="FreightFloo - Digital Freight Marketplace"
+                description="Connect shippers with trusted carriers for efficient freight transportation. Simple, transparent, cost-effective shipping solutions."
+                className="text-white"
+              />
             </div>
           </div>
         </div>
