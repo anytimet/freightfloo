@@ -209,6 +209,51 @@ export function createEmailTemplate(type: string, data: any): { subject: string;
         `
       }
 
+    case 'CONTACT_FORM':
+      return {
+        subject: `New Contact Form Submission: ${data.subject}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">📧 New Contact Form Submission</h2>
+            <p>You have received a new message through the FreightFloo contact form:</p>
+            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 5px 0;"><strong>Name:</strong> ${data.name}</p>
+              <p style="margin: 5px 0;"><strong>Email:</strong> ${data.email}</p>
+              <p style="margin: 5px 0;"><strong>Inquiry Type:</strong> ${data.inquiryType}</p>
+              <p style="margin: 5px 0;"><strong>Subject:</strong> ${data.subject}</p>
+              <p style="margin: 5px 0;"><strong>Message:</strong></p>
+              <div style="background: white; padding: 15px; border-radius: 4px; margin-top: 10px;">
+                ${data.message.replace(/\n/g, '<br>')}
+              </div>
+            </div>
+            <p style="color: #6b7280; font-size: 14px;">FreightFloo - Connecting Shippers with Trusted Carriers</p>
+          </div>
+        `
+      }
+
+    case 'CONTACT_CONFIRMATION':
+      return {
+        subject: 'Thank you for contacting FreightFloo',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">Thank You for Contacting FreightFloo!</h2>
+            <p>Hi ${data.name},</p>
+            <p>Thank you for reaching out to us. We have received your message regarding "${data.subject}" and will get back to you within 24 hours.</p>
+            <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2563eb;">
+              <h3 style="margin: 0 0 10px 0;">What happens next?</h3>
+              <ul style="margin: 0; padding-left: 20px;">
+                <li>Our team will review your inquiry</li>
+                <li>We'll respond within 24 hours</li>
+                <li>If urgent, please call us at +1 (555) 123-4567</li>
+              </ul>
+            </div>
+            <p>In the meantime, feel free to explore our marketplace and see how FreightFloo can help with your shipping needs.</p>
+            <p><a href="https://freightfloo.com" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Visit FreightFloo</a></p>
+            <p style="color: #6b7280; font-size: 14px;">FreightFloo - Connecting Shippers with Trusted Carriers</p>
+          </div>
+        `
+      }
+
     default:
       return {
         subject: 'FreightFloo Notification',
