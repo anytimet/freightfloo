@@ -19,9 +19,6 @@ COPY . .
 # Generate Prisma client
 RUN pnpm prisma generate
 
-# Initialize database
-RUN pnpm prisma db push
-
 # Build the application
 RUN pnpm build
 
