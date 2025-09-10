@@ -102,7 +102,7 @@ export default function BlogPage() {
                     href={`/blog/${post.slug}`}
                     className="text-primary-600 hover:text-primary-700 font-medium text-sm"
                   >
-                    Read More →
+                    Read more about {post.title.toLowerCase()} →
                   </Link>
                 </div>
               </div>

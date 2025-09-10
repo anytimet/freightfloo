@@ -256,7 +256,7 @@ export default function HomePage() {
                   Learn proven strategies to minimize your freight shipping expenses while maintaining quality service.
                 </p>
                 <Link href="/blog" className="text-primary-600 hover:text-primary-700 font-medium flex items-center">
-                  Read More
+                  Read more about reducing shipping costs
                   <ArrowRightIcon className="h-4 w-4 ml-1" />
                 </Link>
               </div>
@@ -275,7 +275,7 @@ export default function HomePage() {
                   Explore how AI, IoT, and automation are transforming the freight and logistics industry.
                 </p>
                 <Link href="/blog" className="text-primary-600 hover:text-primary-700 font-medium flex items-center">
-                  Read More
+                  Read more about freight technology trends
                   <ArrowRightIcon className="h-4 w-4 ml-1" />
                 </Link>
               </div>
@@ -294,7 +294,7 @@ export default function HomePage() {
                   A comprehensive guide to selecting reliable carriers for your shipping needs.
                 </p>
                 <Link href="/blog" className="text-primary-600 hover:text-primary-700 font-medium flex items-center">
-                  Read More
+                  Read more about choosing carriers
                   <ArrowRightIcon className="h-4 w-4 ml-1" />
                 </Link>
               </div>

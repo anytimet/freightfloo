@@ -20,6 +20,23 @@ const nextConfig = {
   // Performance optimizations
   poweredByHeader: false,
   generateEtags: false,
+  // Optimize for modern browsers
+  compiler: {
+    // Remove console.log in production
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  // Modern browser support
+  transpilePackages: [],
+  // Bundle analyzer (uncomment to analyze bundle)
+  // webpack: (config, { isServer }) => {
+  //   if (!isServer) {
+  //     config.resolve.fallback = {
+  //       ...config.resolve.fallback,
+  //       fs: false,
+  //     }
+  //   }
+  //   return config
+  // },
 }
 
 module.exports = nextConfig
