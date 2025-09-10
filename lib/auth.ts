@@ -16,19 +16,8 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // Demo mode: Allow login with any email/password for testing
-        console.log('Demo login attempt:', { email: credentials.email })
-        
-        // For demo purposes, accept any login
-        return {
-          id: 'demo-user-' + Date.now(),
-          email: credentials.email,
-          name: 'Demo User',
-          role: 'SHIPPER',
-        }
+        console.log('Login attempt:', { email: credentials.email })
 
-        // Real database login (commented out for demo)
-        /*
         const user = await prisma.user.findUnique({
           where: {
             email: credentials.email
@@ -54,7 +43,6 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: user.role,
         }
-        */
       }
     })
   ],
