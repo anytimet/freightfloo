@@ -27,6 +27,8 @@ export default function ContactPage() {
     setIsSubmitting(true)
     
     try {
+      console.log('Submitting contact form:', formData)
+      
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -35,14 +37,21 @@ export default function ContactPage() {
         body: JSON.stringify(formData),
       })
 
+      console.log('Response status:', response.status)
+      console.log('Response ok:', response.ok)
+
       if (response.ok) {
+        const result = await response.json()
+        console.log('Success response:', result)
         setSubmitted(true)
       } else {
-        throw new Error('Failed to send message')
+        const errorData = await response.json()
+        console.error('Error response:', errorData)
+        alert(`Failed to send message: ${errorData.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error sending message:', error)
-      alert('Failed to send message. Please try again.')
+      alert(`Failed to send message: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsSubmitting(false)
     }
