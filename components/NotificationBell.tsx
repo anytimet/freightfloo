@@ -11,21 +11,30 @@ export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
+    console.log('NotificationBell useEffect - session:', session)
     if (session?.user) {
+      console.log('User found, fetching unread count...')
       fetchUnreadCount()
       
       // Poll for new notifications every 30 seconds
       const interval = setInterval(fetchUnreadCount, 30000)
       return () => clearInterval(interval)
+    } else {
+      console.log('No user session found')
     }
   }, [session])
 
   const fetchUnreadCount = async () => {
     try {
+      console.log('Fetching unread count...')
       const response = await fetch('/api/notifications/unread-count')
+      console.log('Response status:', response.status)
       if (response.ok) {
         const data = await response.json()
+        console.log('Unread count data:', data)
         setUnreadCount(data.count || 0)
+      } else {
+        console.error('Failed to fetch unread count:', response.status, response.statusText)
       }
     } catch (error) {
       console.error('Error fetching unread count:', error)
