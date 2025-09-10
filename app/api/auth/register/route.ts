@@ -35,14 +35,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check database connection
-    if (!process.env.DATABASE_URL) {
-      console.error('DATABASE_URL not configured')
-      return NextResponse.json(
-        { message: 'Database not configured. Please contact support.' },
-        { status: 500 }
-      )
-    }
+    // Log registration attempt
+    console.log('Registration attempt:', { name, email, role })
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
