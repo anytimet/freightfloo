@@ -35,6 +35,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check database connection
+    if (!process.env.DATABASE_URL) {
+      console.error('DATABASE_URL not configured')
+      return NextResponse.json(
+        { message: 'Database not configured. Please contact support.' },
+        { status: 500 }
+      )
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email }
@@ -80,19 +89,26 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Send verification email
-    const verificationUrl = `${process.env.NEXTAUTH_URL}/auth/verify?token=${verificationToken}&email=${encodeURIComponent(email)}`
-    
-    const emailTemplate = createEmailTemplate('EMAIL_VERIFICATION', {
-      name: name || 'User',
-      verificationUrl
-    })
+    // Send verification email (only if email service is configured)
+    if (process.env.RESEND_API_KEY) {
+      try {
+        const verificationUrl = `${process.env.NEXTAUTH_URL}/auth/verify?token=${verificationToken}&email=${encodeURIComponent(email)}`
+        
+        const emailTemplate = createEmailTemplate('EMAIL_VERIFICATION', {
+          name: name || 'User',
+          verificationUrl
+        })
 
-    await sendEmail({
-      to: email,
-      subject: emailTemplate.subject,
-      html: emailTemplate.html
-    })
+        await sendEmail({
+          to: email,
+          subject: emailTemplate.subject,
+          html: emailTemplate.html
+        })
+      } catch (emailError) {
+        console.error('Email sending failed:', emailError)
+        // Don't fail registration if email fails
+      }
+    }
 
     // Return user without password
     const { password: _, ...userWithoutPassword } = user
@@ -106,8 +122,24 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error('Registration error:', error)
+    
+    // Provide more specific error information
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { 
+          message: 'Registration failed', 
+          error: error.message,
+          details: 'Please check your input and try again'
+        },
+        { status: 500 }
+      )
+    }
+    
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { 
+        message: 'Internal server error',
+        details: 'Please contact support if this continues'
+      },
       { status: 500 }
     )
   }
