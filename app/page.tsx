@@ -12,6 +12,19 @@ import {
   CheckCircleIcon
 } from '@heroicons/react/24/outline'
 import Navigation from '@/components/Navigation'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'FreightFloo - Connect Shippers with Trusted Carriers',
+  description: 'The leading freight marketplace connecting shippers with verified carriers. Get competitive rates, real-time tracking, and secure payments.',
+  keywords: 'freight, shipping, logistics, carriers, shippers, marketplace',
+  openGraph: {
+    title: 'FreightFloo - Connect Shippers with Trusted Carriers',
+    description: 'The leading freight marketplace connecting shippers with verified carriers.',
+    type: 'website',
+    url: 'https://freightfloo.com',
+  },
+}
 
 export default function HomePage() {
   return (
