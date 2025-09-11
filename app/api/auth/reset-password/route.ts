@@ -20,20 +20,44 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Find valid reset token
-    const resetToken = await prisma.passwordResetToken.findFirst({
-      where: {
-        token,
-        expires: {
-          gt: new Date()
-        }
-      },
-      include: {
-        user: true
-      }
-    })
+    // Find valid reset token - try PasswordResetToken table first, then fallback to user record
+    let user = null
+    let resetTokenId = null
 
-    if (!resetToken) {
+    try {
+      const resetToken = await prisma.passwordResetToken.findFirst({
+        where: {
+          token,
+          expires: {
+            gt: new Date()
+          }
+        },
+        include: {
+          user: true
+        }
+      })
+
+      if (resetToken) {
+        user = resetToken.user
+        resetTokenId = resetToken.id
+      }
+    } catch (dbError) {
+      console.log('PasswordResetToken table not found, trying user record fallback')
+    }
+
+    // Fallback: check user record for reset token
+    if (!user) {
+      user = await prisma.user.findFirst({
+        where: {
+          passwordResetToken: token,
+          passwordResetExpires: {
+            gt: new Date()
+          }
+        }
+      })
+    }
+
+    if (!user) {
       return NextResponse.json(
         { error: 'Token expired or invalid' },
         { status: 400 }
@@ -43,18 +67,31 @@ export async function POST(request: NextRequest) {
     // Hash new password
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Update user password and delete reset token
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id: resetToken.user.id },
+    // Update user password and clean up reset token
+    if (resetTokenId) {
+      // Use PasswordResetToken table
+      await prisma.$transaction([
+        prisma.user.update({
+          where: { id: user.id },
+          data: {
+            password: hashedPassword
+          }
+        }),
+        prisma.passwordResetToken.delete({
+          where: { id: resetTokenId }
+        })
+      ])
+    } else {
+      // Use user record fallback
+      await prisma.user.update({
+        where: { id: user.id },
         data: {
-          password: hashedPassword
+          password: hashedPassword,
+          passwordResetToken: null,
+          passwordResetExpires: null
         }
-      }),
-      prisma.passwordResetToken.delete({
-        where: { id: resetToken.id }
       })
-    ])
+    }
 
     return NextResponse.json({
       message: 'Password reset successfully!'

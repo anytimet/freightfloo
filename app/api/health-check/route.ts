@@ -17,7 +17,7 @@ export async function GET() {
       await prisma.$queryRaw`SELECT 1`
       dbStatus = 'connected'
     } catch (error) {
-      dbStatus = `error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      dbStatus = `error: ${error instanceof Error ? error.message : String(error)}`
     }
 
     return NextResponse.json({

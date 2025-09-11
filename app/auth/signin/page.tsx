@@ -28,10 +28,13 @@ export default function SignInPage() {
       })
 
       if (result?.error) {
+        // NextAuth.js returns generic error messages, so we'll use a general message
         setError('Invalid email or password')
-      } else {
+      } else if (result?.ok) {
         const redirectUrl = searchParams.get('redirect') || '/dashboard'
         router.push(redirectUrl)
+      } else {
+        setError('An unexpected error occurred. Please try again.')
       }
     } catch (error) {
       setError('An error occurred. Please try again.')

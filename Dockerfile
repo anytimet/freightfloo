@@ -1,6 +1,9 @@
 # Use the official Node.js 18 image with OpenSSL support
 FROM node:18-slim
 
+# Install OpenSSL to fix Prisma warnings
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
 # Set working directory
 WORKDIR /app
 

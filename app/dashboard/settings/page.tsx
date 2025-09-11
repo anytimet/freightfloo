@@ -106,11 +106,11 @@ export default function SettingsPage() {
     }))
   }
 
-  const handleNestedInputChange = (parent: string, field: string, value: any) => {
+  const handleNestedInputChange = (parent: keyof UserSettings, field: string, value: any) => {
     setSettings(prev => ({
       ...prev,
       [parent]: {
-        ...prev[parent as keyof UserSettings],
+        ...(prev[parent] && typeof prev[parent] === 'object' ? prev[parent] as Record<string, any> : {}),
         [field]: value
       }
     }))

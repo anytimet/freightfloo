@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import SocialShare from '@/components/SocialShare'
+import LogoWithFallback from '@/components/LogoWithFallback'
 import { 
   TruckIcon, 
   ClockIcon, 
@@ -454,18 +455,11 @@ export default function HomePage() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="relative w-8 h-8">
-                  <Image
-                    src="/logo.png"
-                    alt="FreightFloo Logo"
-                    fill
+                  <LogoWithFallback 
                     className="object-contain"
-                    onError={(e) => {
-                      // Fallback to TruckIcon if logo doesn't exist
-                      e.currentTarget.style.display = 'none'
-                      e.currentTarget.nextElementSibling.style.display = 'block'
-                    }}
+                    alt="FreightFloo Logo"
+                    fallbackIconClassName="h-6 w-6 text-primary-400 hidden"
                   />
-                  <TruckIcon className="h-6 w-6 text-primary-400 hidden" />
                 </div>
                 <span className="text-lg font-bold">FreightFloo</span>
               </div>

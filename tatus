@@ -1,0 +1,10 @@
+[33mf31d8b3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix TypeScript error in user settings API: Replace non-existent fields with correct User model fields
+[33me97d78e[m Fix TypeScript error in test-register API: Handle unknown error type
+[33mba64cc3[m Fix TypeScript error in health-check API: Handle unknown error type
+[33m14401d9[m Fix 401 errors: Add CORS headers and simple test API for debugging
+[33mf1c1c0d[m Add diagnostic tools: Health check API and better error handling for database issues
+[33mbf5f21a[m Fix authentication issues: Add test registration API and improve error handling
+[33ma63a4b8[m Fix robots.txt: Allow Googlebot to index public pages for better SEO
+[33mcb807c0[m Fix robots.txt: Remove unsupported Host directive
+[33m3e2f86c[m Fix TypeScript error in carriers API and add logo support
+[33me90dbce[m Add comprehensive social media strategy and sharing features

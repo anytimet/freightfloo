@@ -23,15 +23,25 @@ export async function GET(request: NextRequest) {
       role: 'CARRIER'
     }
 
+    // Build OR conditions for search and location
+    const orConditions: any[] = []
+
     if (search) {
-      whereClause.OR = [
+      orConditions.push(
         { name: { contains: search, mode: 'insensitive' } },
         { companyName: { contains: search, mode: 'insensitive' } }
-      ]
+      )
     }
 
     if (location) {
-      whereClause.location = { contains: location, mode: 'insensitive' }
+      orConditions.push(
+        { companyCity: { contains: location, mode: 'insensitive' } },
+        { companyState: { contains: location, mode: 'insensitive' } }
+      )
+    }
+
+    if (orConditions.length > 0) {
+      whereClause.OR = orConditions
     }
 
     if (equipmentType) {
