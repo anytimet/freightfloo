@@ -22,6 +22,17 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           '/',
           '/_next/static/',
+          '/blog/',
+          '/about/',
+          '/contact/',
+          '/how-it-works/',
+          '/marketplace/',
+          '/carrier/',
+          '/business/',
+          '/careers/',
+          '/help/',
+          '/faq/',
+          '/support/',
         ],
         disallow: [
           '/api/',
