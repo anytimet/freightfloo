@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         email: true,
-        companyPhone: true,
+        companyPhone: true, // Fixed phone field reference
         companyName: true,
         dotNumber: true,
         mcNumber: true,
