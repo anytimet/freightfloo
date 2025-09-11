@@ -13,6 +13,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Test database connection first
+    try {
+      await prisma.$queryRaw`SELECT 1`
+    } catch (dbError) {
+      console.error('Database connection error:', dbError)
+      return NextResponse.json(
+        { 
+          error: 'Database connection failed',
+          details: dbError.message,
+          suggestion: 'Check DATABASE_URL environment variable'
+        },
+        { status: 500 }
+      )
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email }
@@ -51,7 +66,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error.message,
+        type: error.constructor.name
+      },
       { status: 500 }
     )
   }

@@ -1,47 +1,43 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // Test database connection
-    await prisma.user.count()
-    
-    const healthCheck = {
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      environment: {
-        NODE_ENV: process.env.NODE_ENV,
-        hasNextAuthUrl: !!process.env.NEXTAUTH_URL,
-        hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-        hasDatabaseUrl: !!process.env.DATABASE_URL,
-        hasResendKey: !!process.env.RESEND_API_KEY,
-        hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
-        hasStripeWebhook: !!process.env.STRIPE_WEBHOOK_SECRET,
-        hasGoogleMapsKey: !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-      },
-      nextAuthUrl: process.env.NEXTAUTH_URL || 'Not set',
-      nextAuthSecretPrefix: process.env.NEXTAUTH_SECRET ? 
-        process.env.NEXTAUTH_SECRET.substring(0, 10) + '...' : 'Not set',
-      databaseUrlPrefix: process.env.DATABASE_URL ? 
-        process.env.DATABASE_URL.substring(0, 20) + '...' : 'Not set'
+    // Check environment variables
+    const envCheck = {
+      DATABASE_URL: !!process.env.DATABASE_URL,
+      NEXTAUTH_URL: !!process.env.NEXTAUTH_URL,
+      NEXTAUTH_SECRET: !!process.env.NEXTAUTH_SECRET,
+      RESEND_API_KEY: !!process.env.RESEND_API_KEY,
     }
 
-    return NextResponse.json(healthCheck)
-  } catch (error) {
+    // Test database connection
+    let dbStatus = 'unknown'
+    try {
+      await prisma.$queryRaw`SELECT 1`
+      dbStatus = 'connected'
+    } catch (error) {
+      dbStatus = `error: ${error.message}`
+    }
+
     return NextResponse.json({
-      status: 'error',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: 'ok',
       timestamp: new Date().toISOString(),
-      environment: {
-        NODE_ENV: process.env.NODE_ENV,
-        hasNextAuthUrl: !!process.env.NEXTAUTH_URL,
-        hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-        hasDatabaseUrl: !!process.env.DATABASE_URL,
-        hasResendKey: !!process.env.RESEND_API_KEY,
-        hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
-        hasStripeWebhook: !!process.env.STRIPE_WEBHOOK_SECRET,
-        hasGoogleMapsKey: !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+      environment: process.env.NODE_ENV,
+      database: dbStatus,
+      environmentVariables: envCheck,
+      prisma: {
+        clientGenerated: !!prisma,
       }
-    }, { status: 500 })
+    })
+  } catch (error) {
+    return NextResponse.json(
+      {
+        status: 'error',
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    )
   }
 }
