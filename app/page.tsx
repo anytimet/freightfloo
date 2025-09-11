@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import SocialShare from '@/components/SocialShare'
 import { 
   TruckIcon, 
@@ -24,6 +25,20 @@ export const metadata: Metadata = {
     description: 'The leading freight marketplace connecting shippers with verified carriers.',
     type: 'website',
     url: 'https://freightfloo.com',
+    images: [
+      {
+        url: 'https://freightfloo.com/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'FreightFloo Logo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FreightFloo - Connect Shippers with Trusted Carriers',
+    description: 'The leading freight marketplace connecting shippers with verified carriers.',
+    images: ['https://freightfloo.com/logo.png'],
   },
 }
 
@@ -438,7 +453,20 @@ export default function HomePage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <TruckIcon className="h-6 w-6 text-primary-400" />
+                <div className="relative w-8 h-8">
+                  <Image
+                    src="/logo.png"
+                    alt="FreightFloo Logo"
+                    fill
+                    className="object-contain"
+                    onError={(e) => {
+                      // Fallback to TruckIcon if logo doesn't exist
+                      e.currentTarget.style.display = 'none'
+                      e.currentTarget.nextElementSibling.style.display = 'block'
+                    }}
+                  />
+                  <TruckIcon className="h-6 w-6 text-primary-400 hidden" />
+                </div>
                 <span className="text-lg font-bold">FreightFloo</span>
               </div>
               <p className="text-gray-400 mb-6">

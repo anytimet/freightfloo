@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
 import { Bars3Icon, XMarkIcon, TruckIcon } from '@heroicons/react/24/outline'
 import NotificationBell from './NotificationBell'
@@ -16,7 +17,20 @@ export default function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <TruckIcon className="h-6 w-6 text-primary-600" />
+              <div className="relative w-8 h-8">
+                <Image
+                  src="/logo.png"
+                  alt="FreightFloo Logo"
+                  fill
+                  className="object-contain"
+                  onError={(e) => {
+                    // Fallback to TruckIcon if logo doesn't exist
+                    e.currentTarget.style.display = 'none'
+                    e.currentTarget.nextElementSibling.style.display = 'block'
+                  }}
+                />
+                <TruckIcon className="h-6 w-6 text-primary-600 hidden" />
+              </div>
               <span className="text-xl font-bold text-gray-900">FreightFloo</span>
             </Link>
           </div>

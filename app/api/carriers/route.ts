@@ -51,11 +51,10 @@ export async function GET(request: NextRequest) {
         companyName: true,
         dotNumber: true,
         mcNumber: true,
-        location: true,
+        companyCity: true,
+        companyState: true,
         equipmentTypes: true,
-        rating: true,
-        reviewCount: true,
-        isVerified: true,
+        carrierVerified: true,
         createdAt: true
       },
       orderBy: {
