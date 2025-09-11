@@ -47,11 +47,16 @@ export async function POST(request: NextRequest) {
       resetUrl
     })
 
-    await sendEmail({
+    const emailResult = await sendEmail({
       to: email,
       subject: emailTemplate.subject,
       html: emailTemplate.html
     })
+
+    // If email service is not configured, still return success but log the issue
+    if (!emailResult.success) {
+      console.log('Email service not available, but password reset token created:', resetToken)
+    }
 
     return NextResponse.json({
       message: 'If an account with that email exists, we have sent password reset instructions.'
