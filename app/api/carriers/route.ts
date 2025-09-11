@@ -52,6 +52,8 @@ export async function GET(request: NextRequest) {
       whereClause.rating = { gte: parseFloat(minRating) }
     }
 
+    // Ensure we don't have any invalid fields
+
     const carriers = await prisma.user.findMany({
       where: whereClause,
       select: {
