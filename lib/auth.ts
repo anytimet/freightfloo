@@ -12,14 +12,15 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        console.log('🔐 NextAuth authorize called with:', { email: credentials?.email })
+        
         if (!credentials?.email || !credentials?.password) {
-          console.log('Missing credentials')
+          console.log('❌ Missing credentials')
           return null
         }
 
-        console.log('Login attempt:', { email: credentials.email })
-
         try {
+          console.log('🔍 Looking up user in database...')
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email
@@ -27,21 +28,24 @@ export const authOptions: NextAuthOptions = {
           })
 
           if (!user) {
-            console.log('User not found:', credentials.email)
+            console.log('❌ User not found:', credentials.email)
             return null
           }
 
+          console.log('✅ User found:', { id: user.id, email: user.email, name: user.name })
+
+          console.log('🔑 Comparing password...')
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
             user.password
           )
 
           if (!isPasswordValid) {
-            console.log('Invalid password for user:', credentials.email)
+            console.log('❌ Invalid password for user:', credentials.email)
             return null
           }
 
-          console.log('Authentication successful for user:', user.email)
+          console.log('✅ Authentication successful for user:', user.email)
           return {
             id: user.id,
             email: user.email,
@@ -49,7 +53,7 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
           }
         } catch (error) {
-          console.error('Authentication error:', error)
+          console.error('💥 Authentication error:', error)
           return null
         }
       }
@@ -60,12 +64,14 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
+      console.log('🔄 JWT callback:', { token: token?.sub, user: user?.email })
       if (user) {
         token.role = (user as any).role
       }
       return token
     },
     async session({ session, token }) {
+      console.log('🔄 Session callback:', { session: session?.user?.email, token: token?.sub })
       if (token && session.user) {
         (session.user as any).id = token.sub as string
         (session.user as any).role = token.role as string
@@ -75,5 +81,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/signin',
-  }
+  },
+  debug: true
 }
