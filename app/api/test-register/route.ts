@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       return addCorsHeaders(NextResponse.json(
         { 
           error: 'Database connection failed',
-          details: dbError.message,
+          details: dbError instanceof Error ? dbError.message : 'Unknown error',
           suggestion: 'Check DATABASE_URL environment variable'
         },
         { status: 500 }
@@ -80,8 +80,8 @@ export async function POST(request: NextRequest) {
     return addCorsHeaders(NextResponse.json(
       { 
         error: 'Internal server error',
-        details: error.message,
-        type: error.constructor.name
+        details: error instanceof Error ? error.message : 'Unknown error',
+        type: error instanceof Error ? error.constructor.name : 'Unknown'
       },
       { status: 500 }
     ))
