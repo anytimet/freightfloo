@@ -2,15 +2,27 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
+// Add CORS headers
+function addCorsHeaders(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  return response
+}
+
+export async function OPTIONS() {
+  return addCorsHeaders(new NextResponse(null, { status: 200 }))
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { email, password, name, role = 'SHIPPER' } = await request.json()
 
     if (!email || !password) {
-      return NextResponse.json(
+      return addCorsHeaders(NextResponse.json(
         { error: 'Email and password are required' },
         { status: 400 }
-      )
+      ))
     }
 
     // Test database connection first
@@ -18,14 +30,14 @@ export async function POST(request: NextRequest) {
       await prisma.$queryRaw`SELECT 1`
     } catch (dbError) {
       console.error('Database connection error:', dbError)
-      return NextResponse.json(
+      return addCorsHeaders(NextResponse.json(
         { 
           error: 'Database connection failed',
           details: dbError.message,
           suggestion: 'Check DATABASE_URL environment variable'
         },
         { status: 500 }
-      )
+      ))
     }
 
     // Check if user already exists
@@ -34,10 +46,10 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingUser) {
-      return NextResponse.json(
+      return addCorsHeaders(NextResponse.json(
         { error: 'User already exists' },
         { status: 400 }
-      )
+      ))
     }
 
     // Hash password
@@ -54,7 +66,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({
+    return addCorsHeaders(NextResponse.json({
       message: 'User created successfully',
       user: {
         id: user.id,
@@ -62,16 +74,16 @@ export async function POST(request: NextRequest) {
         name: user.name,
         role: user.role
       }
-    })
+    }))
   } catch (error) {
     console.error('Registration error:', error)
-    return NextResponse.json(
+    return addCorsHeaders(NextResponse.json(
       { 
         error: 'Internal server error',
         details: error.message,
         type: error.constructor.name
       },
       { status: 500 }
-    )
+    ))
   }
 }
