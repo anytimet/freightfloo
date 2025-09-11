@@ -18,13 +18,12 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         email: true,
-        phone: true,
+        companyPhone: true,
         companyName: true,
         dotNumber: true,
         mcNumber: true,
         equipmentTypes: true,
-        notificationSettings: true,
-        privacySettings: true
+        carrierVerified: true
       }
     })
 
@@ -35,17 +34,17 @@ export async function GET(request: NextRequest) {
     const settings = {
       name: user.name || '',
       email: user.email || '',
-      phone: user.phone || '',
+      phone: user.companyPhone || '',
       companyName: user.companyName || '',
       dotNumber: user.dotNumber || '',
       mcNumber: user.mcNumber || '',
-      equipmentTypes: user.equipmentTypes || [],
-      notifications: user.notificationSettings || {
+      equipmentTypes: user.equipmentTypes || '',
+      notifications: {
         email: true,
         sms: false,
         push: true
       },
-      privacy: user.privacySettings || {
+      privacy: {
         profileVisible: true,
         contactVisible: false
       }
@@ -90,25 +89,22 @@ export async function PUT(request: NextRequest) {
       data: {
         name,
         email,
-        phone,
+        companyPhone: phone,
         companyName,
         dotNumber,
         mcNumber,
-        equipmentTypes,
-        notificationSettings: notifications,
-        privacySettings: privacy
+        equipmentTypes
       },
       select: {
         id: true,
         name: true,
         email: true,
-        phone: true,
+        companyPhone: true,
         companyName: true,
         dotNumber: true,
         mcNumber: true,
         equipmentTypes: true,
-        notificationSettings: true,
-        privacySettings: true
+        carrierVerified: true
       }
     })
 
@@ -117,17 +113,17 @@ export async function PUT(request: NextRequest) {
       settings: {
         name: updatedUser.name || '',
         email: updatedUser.email || '',
-        phone: updatedUser.phone || '',
+        phone: updatedUser.companyPhone || '',
         companyName: updatedUser.companyName || '',
         dotNumber: updatedUser.dotNumber || '',
         mcNumber: updatedUser.mcNumber || '',
-        equipmentTypes: updatedUser.equipmentTypes || [],
-        notifications: updatedUser.notificationSettings || {
+        equipmentTypes: updatedUser.equipmentTypes || '',
+        notifications: {
           email: true,
           sms: false,
           push: true
         },
-        privacy: updatedUser.privacySettings || {
+        privacy: {
           profileVisible: true,
           contactVisible: false
         }
