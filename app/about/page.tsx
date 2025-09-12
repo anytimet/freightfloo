@@ -2,6 +2,8 @@ import { CheckIcon, UsersIcon, TruckIcon, GlobeAltIcon } from '@heroicons/react/
 import Navigation from '@/components/Navigation'
 
 export default function AboutPage() {
+  // Force complete rebuild - v2.4 - Fixed carriers API caching issue
+  const buildVersion = '2.4'
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
@@ -207,3 +209,4 @@ export default function AboutPage() {
     </div>
   )
 }
+

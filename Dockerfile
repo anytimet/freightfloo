@@ -14,7 +14,7 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --production=false
 
 # Copy source code
 COPY . .
@@ -25,6 +25,10 @@ RUN pnpm prisma generate
 # Build the application
 RUN pnpm build
 
+# Copy startup script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Expose port
 EXPOSE 3000
 
@@ -32,4 +36,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Start the application
-CMD ["pnpm", "start"]
+CMD ["/app/start.sh"]

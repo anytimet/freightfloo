@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           message: 'Registration failed', 
-          error: error.message,
+          error: error instanceof Error ? error.message : 'Unknown error',
           details: 'Please check your input and try again'
         },
         { status: 500 }

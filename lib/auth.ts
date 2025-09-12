@@ -59,8 +59,13 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
+  secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-development',
   session: {
-    strategy: 'jwt'
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -82,5 +87,16 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/auth/signin',
   },
-  debug: true
+  debug: true,
+  logger: {
+    error: (code, metadata) => {
+      console.error('NextAuth Error:', code, metadata)
+    },
+    warn: (code) => {
+      console.warn('NextAuth Warning:', code)
+    },
+    debug: (code, metadata) => {
+      console.log('NextAuth Debug:', code, metadata)
+    }
+  }
 }

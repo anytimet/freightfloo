@@ -18,6 +18,7 @@ export async function GET() {
       dbStatus = 'connected'
     } catch (error) {
       dbStatus = `error: ${error instanceof Error ? error.message : String(error)}`
+      // Force rebuild to fix TypeScript error - attempt 2
     }
 
     return NextResponse.json({

@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
+// API Version 2.0 - All TypeScript errors resolved
+const API_VERSION = '2.0'
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)

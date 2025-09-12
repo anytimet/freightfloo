@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       return addCorsHeaders(NextResponse.json(
         { 
           error: 'Database connection failed',
-          details: dbError instanceof Error ? dbError.message : 'Unknown error',
+          details: dbError instanceof Error ? dbError.message : String(dbError),
           suggestion: 'Check DATABASE_URL environment variable'
         },
         { status: 500 }
