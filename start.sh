@@ -9,4 +9,5 @@ pnpm prisma db push
 
 # Start the application on the port specified by Cloud Run
 echo "Starting Next.js application on port ${PORT:-8080}..."
-exec pnpm start -- -p ${PORT:-8080}
+export PORT=${PORT:-8080}
+exec pnpm run start:custom
