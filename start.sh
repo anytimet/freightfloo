@@ -1,15 +1,19 @@
 #!/bin/sh
 set -e
 
-echo "Starting FreightFloo application..."
+echo "=== FreightFloo Startup Script ==="
+echo "Current directory: $(pwd)"
+echo "Environment variables:"
+echo "NODE_ENV: $NODE_ENV"
+echo "PORT: $PORT"
+echo "PATH: $PATH"
 
-# For SQLite, we just need to ensure the database exists
-echo "Setting up SQLite database..."
+echo "=== Setting up SQLite database ==="
 pnpm prisma db push
 
-# Start the application on the port specified by Cloud Run
-echo "Starting Next.js application on port ${PORT:-8080}..."
+echo "=== Starting Next.js application ==="
 export PORT=${PORT:-8080}
-echo "PORT environment variable set to: $PORT"
-echo "Starting Next.js with: next start -p $PORT"
+echo "Final PORT: $PORT"
+
+echo "=== Starting Next.js with: next start -p $PORT ==="
 exec npx next start -p $PORT

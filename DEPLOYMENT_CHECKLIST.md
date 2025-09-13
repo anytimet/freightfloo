@@ -37,7 +37,7 @@ RESEND_API_KEY=re_your_key
 # Payment system
 STRIPE_SECRET_KEY=sk_live_your_key
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_your_key
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 
 # Optional but recommended
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_maps_key
