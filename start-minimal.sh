@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-echo "=== Minimal FreightFloo Startup ==="
+echo "=== FreightFloo Startup ==="
 echo "NODE_ENV: $NODE_ENV"
 echo "PORT: $PORT"
 
@@ -9,6 +9,10 @@ echo "PORT: $PORT"
 export PORT=${PORT:-8080}
 echo "Using PORT: $PORT"
 
-# Start Next.js directly
+# Setup database
+echo "Setting up database..."
+pnpm prisma db push
+
+# Start Next.js
 echo "Starting Next.js..."
 exec npx next start -p $PORT
