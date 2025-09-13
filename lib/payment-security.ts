@@ -34,20 +34,23 @@ export async function validatePaymentSecurity(
       }
     }
 
-    // Check 2: Account age (minimum 24 hours)
+    // Check 2: Account age (minimum 24 hours in production, 1 minute in development)
     const accountAge = Date.now() - new Date(user.createdAt).getTime()
-    const minAccountAge = 24 * 60 * 60 * 1000 // 24 hours
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    const minAccountAge = isDevelopment ? 60 * 1000 : 24 * 60 * 60 * 1000 // 1 minute in dev, 24 hours in prod
 
     if (accountAge < minAccountAge) {
       return {
         isValid: false,
-        reason: 'Account too new for large payments',
+        reason: isDevelopment 
+          ? 'Account too new for payments (wait 1 minute)' 
+          : 'Account too new for large payments',
         riskLevel: 'HIGH'
       }
     }
 
-    // Check 3: Email verification
-    if (!user.emailVerified) {
+    // Check 3: Email verification (skip in development)
+    if (!user.emailVerified && !isDevelopment) {
       return {
         isValid: false,
         reason: 'Email not verified',

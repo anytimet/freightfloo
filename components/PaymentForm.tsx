@@ -48,7 +48,7 @@ function CheckoutForm({ shipmentId, bidId, amount, onSuccess, onError }: Payment
         body: JSON.stringify({ shipmentId, bidId }),
       })
 
-      const { clientSecret, paymentId, error: apiError } = await response.json()
+      const { clientSecret, paymentIntentId, error: apiError } = await response.json()
 
       if (apiError) {
         throw new Error(apiError)
@@ -58,7 +58,7 @@ function CheckoutForm({ shipmentId, bidId, amount, onSuccess, onError }: Payment
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/shipment/${shipmentId}`,
+          return_url: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/shipment/${shipmentId}`,
         },
         redirect: 'if_required',
       })
@@ -73,29 +73,9 @@ function CheckoutForm({ shipmentId, bidId, amount, onSuccess, onError }: Payment
       } else {
         setMessage('Payment successful! Processing...')
         
-        // Complete the payment process
-        try {
-          const completeResponse = await fetch('/api/payments/complete', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ paymentId }),
-          })
-
-          const completeData = await completeResponse.json()
-
-          if (completeData.success) {
-            setMessage('Payment completed successfully! Shipment has been assigned.')
-            onSuccess()
-          } else {
-            setMessage('Payment processed but there was an issue updating the shipment status.')
-            onError(completeData.error || 'Failed to complete payment process')
-          }
-        } catch (completeError) {
-          setMessage('Payment processed but there was an issue updating the shipment status.')
-          onError('Failed to complete payment process')
-        }
+        // Payment completed successfully - webhook will handle the rest
+        setMessage('Payment completed successfully! Shipment has been assigned.')
+        onSuccess()
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Payment failed'

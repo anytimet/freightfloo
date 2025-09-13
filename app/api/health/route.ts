@@ -1,30 +1,53 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { validateEnvironment, getEnvironmentInfo } from '@/lib/env-validation'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const healthCheck = {
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      environment: {
-        NODE_ENV: process.env.NODE_ENV,
-        hasNextAuthUrl: !!process.env.NEXTAUTH_URL,
-        hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-        hasDatabaseUrl: !!process.env.DATABASE_URL,
-        hasResendKey: !!process.env.RESEND_API_KEY,
-        hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
-        hasStripeWebhook: !!process.env.STRIPE_WEBHOOK_SECRET,
-      },
-      nextAuthUrl: process.env.NEXTAUTH_URL || 'Not set',
-      nextAuthSecretPrefix: process.env.NEXTAUTH_SECRET ? 
-        process.env.NEXTAUTH_SECRET.substring(0, 10) + '...' : 'Not set'
+    // Validate environment configuration
+    const envValidation = validateEnvironment()
+    const envInfo = getEnvironmentInfo()
+    
+    // Check database connectivity
+    await prisma.$queryRaw`SELECT 1`
+    
+    // Check optional services
+    const optionalServices = {
+      stripe: !!process.env.STRIPE_SECRET_KEY,
+      email: !!process.env.RESEND_API_KEY,
+      maps: !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
     }
-
-    return NextResponse.json(healthCheck)
-  } catch (error) {
+    
+    // If environment validation fails, return unhealthy
+    if (!envValidation.isValid) {
+      return NextResponse.json({
+        status: 'unhealthy',
+        message: 'Environment configuration errors',
+        environment: envInfo.environment,
+        errors: envValidation.errors,
+        warnings: envValidation.warnings,
+        database: 'connected'
+      }, { status: 503 })
+    }
+    
     return NextResponse.json({
-      status: 'error',
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      version: process.env.npm_package_version || '1.0.0',
+      environment: envInfo.environment,
+      isProduction: envInfo.isProduction,
+      isDevelopment: envInfo.isDevelopment,
+      services: optionalServices,
+      database: 'connected',
+      warnings: envValidation.warnings.length > 0 ? envValidation.warnings : undefined
+    })
+  } catch (error) {
+    console.error('Health check failed:', error)
+    return NextResponse.json({
+      status: 'unhealthy',
+      message: 'Database connection failed',
       error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString()
-    }, { status: 500 })
+      environment: process.env.NODE_ENV || 'development'
+    }, { status: 503 })
   }
 }

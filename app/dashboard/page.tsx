@@ -2,6 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import DashboardLayout from '@/components/DashboardLayout'
 import {
   ClipboardDocumentListIcon,
@@ -30,10 +31,12 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const { data: session } = useSession()
+  const searchParams = useSearchParams()
   const [stats, setStats] = useState<DashboardStats>({})
   const [loading, setLoading] = useState(true)
 
   const userRole = (session?.user as any)?.role || 'SHIPPER'
+  const welcomeType = searchParams.get('welcome')
 
   useEffect(() => {
     fetchDashboardStats()
@@ -200,6 +203,71 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {/* Welcome Banner for New Users */}
+        {welcomeType === 'carrier' && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <TruckIcon className="h-6 w-6 text-green-600" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-lg font-medium text-green-800">
+                  Welcome to FreightFloo, Carrier!
+                </h3>
+                <div className="mt-2 text-sm text-green-700">
+                  <p>Your account has been created successfully. Here's what you can do next:</p>
+                  <ul className="mt-2 list-disc list-inside space-y-1">
+                    <li>Browse available shipments that match your equipment type</li>
+                    <li>Submit competitive bids on loads you want to haul</li>
+                    <li>Manage your fleet and driver information</li>
+                    <li>Track your earnings and performance</li>
+                  </ul>
+                </div>
+                <div className="mt-4">
+                  <a
+                    href="/dashboard/browse-shipments"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    Start Browsing Shipments
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {welcomeType === 'shipper' && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <ClipboardDocumentListIcon className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-lg font-medium text-blue-800">
+                  Welcome to FreightFloo, Shipper!
+                </h3>
+                <div className="mt-2 text-sm text-blue-700">
+                  <p>Your account has been created successfully. Here's what you can do next:</p>
+                  <ul className="mt-2 list-disc list-inside space-y-1">
+                    <li>Post your first shipment to get competitive bids</li>
+                    <li>Review and select the best carrier for your needs</li>
+                    <li>Track your shipments in real-time</li>
+                    <li>Manage your shipping history and payments</li>
+                  </ul>
+                </div>
+                <div className="mt-4">
+                  <a
+                    href="/shipment/new"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    Post Your First Shipment
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>

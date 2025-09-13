@@ -20,6 +20,7 @@ export default function LogoWithFallback({
         src="/logo.png"
         alt={alt}
         fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         className={className}
         onError={(e) => {
           // Fallback to TruckIcon if logo doesn't exist

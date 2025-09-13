@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { MapPinIcon, CalendarIcon, CurrencyDollarIcon, ScaleIcon } from '@heroicons/react/24/outline'
 import Navigation from '@/components/Navigation'
 import AddressAutocomplete from '@/components/AddressAutocomplete'
+import GoogleMap from '@/components/GoogleMap'
 import { trackShipmentCreated } from '@/lib/analytics'
 
 export default function NewShipmentPage() {
@@ -13,6 +14,8 @@ export default function NewShipmentPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [mapDistance, setMapDistance] = useState('')
+  const [mapDuration, setMapDuration] = useState('')
 
   // Get today's date in YYYY-MM-DD format for date picker min
   const today = new Date().toISOString().split('T')[0]
@@ -38,6 +41,16 @@ export default function NewShipmentPage() {
       ...formData,
       [e.target.name]: e.target.value,
     })
+  }
+
+  const handleDistanceDuration = (distance: string, duration: string) => {
+    setMapDistance(distance)
+    setMapDuration(duration)
+    // Auto-fill the distance field if it's empty
+    if (!formData.distance && distance) {
+      const numericDistance = distance.replace(/[^\d.]/g, '')
+      setFormData(prev => ({ ...prev, distance: numericDistance }))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -205,6 +218,33 @@ export default function NewShipmentPage() {
                 </div>
               </div>
             </div>
+
+            {/* Route Preview Map */}
+            {formData.origin && formData.destination && (
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Route Preview
+                </label>
+                <div className="border rounded-lg overflow-hidden">
+                  <GoogleMap
+                    origin={formData.origin}
+                    destination={formData.destination}
+                    onDistanceDuration={handleDistanceDuration}
+                    className="h-64"
+                  />
+                </div>
+                {(mapDistance || mapDuration) && (
+                  <div className="mt-2 flex gap-4 text-sm">
+                    {mapDistance && (
+                      <span className="text-blue-600 font-medium">📏 Distance: {mapDistance}</span>
+                    )}
+                    {mapDuration && (
+                      <span className="text-green-600 font-medium">⏱️ Duration: {mapDuration}</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>

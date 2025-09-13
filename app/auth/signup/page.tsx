@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { TruckIcon, EyeIcon, EyeSlashIcon, BuildingOfficeIcon, UserIcon, CheckIcon } from '@heroicons/react/24/outline'
 import { EQUIPMENT_TYPES } from '@/lib/equipment-types'
@@ -64,8 +65,41 @@ export default function SignUpPage() {
       })
 
       if (response.ok) {
-        const redirectUrl = searchParams.get('redirect') || '/auth/signin?message=Account created successfully'
-        router.push(redirectUrl)
+        // Automatically sign in the user after successful registration
+        try {
+          const signInResult = await signIn('credentials', {
+            email: formData.email,
+            password: formData.password,
+            redirect: false,
+          })
+
+          if (signInResult?.ok) {
+            // Role-specific redirects after successful registration and sign-in
+            let redirectUrl = searchParams.get('redirect')
+            
+            if (!redirectUrl) {
+              if (formData.role === 'CARRIER') {
+                // For carriers, redirect to dashboard where they can complete their profile
+                redirectUrl = '/dashboard?welcome=carrier'
+              } else if (formData.role === 'SHIPPER') {
+                // For shippers, redirect to dashboard
+                redirectUrl = '/dashboard?welcome=shipper'
+              } else {
+                // Default fallback
+                redirectUrl = '/dashboard'
+              }
+            }
+            
+            router.push(redirectUrl)
+          } else {
+            // If auto sign-in fails, redirect to signin page
+            router.push('/auth/signin?message=Account created successfully. Please sign in to continue.')
+          }
+        } catch (signInError) {
+          console.error('Auto sign-in failed:', signInError)
+          // If auto sign-in fails, redirect to signin page
+          router.push('/auth/signin?message=Account created successfully. Please sign in to continue.')
+        }
       } else {
         const data = await response.json()
         setError(data.message || 'An error occurred')
@@ -78,6 +112,7 @@ export default function SignUpPage() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    console.log('Form change:', e.target.name, e.target.value)
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -94,6 +129,7 @@ export default function SignUpPage() {
   }
 
   const nextStep = () => {
+    console.log('Next step called, current step:', currentStep, 'formData:', formData)
     if (currentStep === 1) {
       if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
         setError('Please fill in all required fields')
@@ -112,6 +148,7 @@ export default function SignUpPage() {
       }
     } else if (currentStep === 2) {
       if (formData.role === 'SHIPPER') {
+        console.log('Shipper role, userType:', formData.userType)
         if (formData.userType === 'COMPANY') {
           if (!formData.companyName || !formData.companyAddress || !formData.companyCity) {
             setError('Please fill in all required company fields')

@@ -62,10 +62,22 @@ export default function BrowseShipmentsPage() {
       const response = await fetch(`/api/shipments?${params.toString()}`)
       if (response.ok) {
         const data = await response.json()
-        setShipments(data)
+        // Ensure data is an array
+        if (Array.isArray(data)) {
+          setShipments(data)
+        } else if (data.shipments && Array.isArray(data.shipments)) {
+          setShipments(data.shipments)
+        } else {
+          console.error('Unexpected data format:', data)
+          setShipments([])
+        }
+      } else {
+        console.error('Failed to fetch shipments:', response.status)
+        setShipments([])
       }
     } catch (error) {
       console.error('Error fetching shipments:', error)
+      setShipments([])
     } finally {
       setLoading(false)
     }
@@ -184,7 +196,7 @@ export default function BrowseShipmentsPage() {
 
         {/* Shipments Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {shipments.map((shipment) => (
+          {Array.isArray(shipments) && shipments.map((shipment) => (
             <div key={shipment.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
               <div className="p-6">
                 {/* Header */}

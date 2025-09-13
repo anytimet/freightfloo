@@ -8,7 +8,8 @@ import {
   ClockIcon, 
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  ArrowPathIcon
 } from '@heroicons/react/24/outline'
 import Navigation from '@/components/Navigation'
 import { showToast } from '@/components/Toast'
@@ -23,21 +24,26 @@ interface TrackingEvent {
 
 interface ShipmentDetails {
   id: string
+  title: string
   origin: string
   destination: string
   status: string
   estimatedDelivery: string
   carrier: {
     name: string
-    phone: string
+    companyName?: string
+    phone?: string
     email: string
-  }
+  } | null
   cargo: {
     description: string
     weight: string
     dimensions: string
   }
   trackingEvents: TrackingEvent[]
+  podReceived?: boolean
+  podImage?: string
+  podNotes?: string
 }
 
 export default function TrackingPage() {
@@ -46,58 +52,55 @@ export default function TrackingPage() {
   const [shipment, setShipment] = useState<ShipmentDetails | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     fetchShipmentDetails()
-  }, [shipmentId])
+    
+    // Auto-refresh every 30 seconds if shipment is in transit
+    const interval = setInterval(() => {
+      if (shipment && ['PICKED_UP', 'IN_TRANSIT'].includes(shipment.status)) {
+        fetchShipmentDetails(true)
+      }
+    }, 30000) // 30 seconds
+    
+    return () => clearInterval(interval)
+  }, [shipmentId, shipment?.status])
 
-  const fetchShipmentDetails = async () => {
+  const fetchShipmentDetails = async (isRefresh = false) => {
     try {
-      setLoading(true)
-      // Mock data - in real app, this would fetch from API
-      const mockShipment: ShipmentDetails = {
-        id: shipmentId,
-        origin: 'Los Angeles, CA',
-        destination: 'New York, NY',
-        status: 'IN_TRANSIT',
-        estimatedDelivery: '2024-01-15T18:00:00Z',
-        carrier: {
-          name: 'Swift Transportation',
-          phone: '(555) 123-4567',
-          email: 'dispatch@swifttrans.com'
-        },
-        cargo: {
-          description: 'Electronics and Computer Equipment',
-          weight: '2,500 lbs',
-          dimensions: '48" x 40" x 36"'
-        },
-        trackingEvents: [
-          {
-            id: '1',
-            status: 'PICKED_UP',
-            location: 'Los Angeles, CA',
-            timestamp: '2024-01-10T08:00:00Z',
-            description: 'Package picked up from origin'
-          },
-          {
-            id: '2',
-            status: 'IN_TRANSIT',
-            location: 'Denver, CO',
-            timestamp: '2024-01-12T14:30:00Z',
-            description: 'Package in transit - arrived at Denver hub'
-          },
-          {
-            id: '3',
-            status: 'IN_TRANSIT',
-            location: 'Chicago, IL',
-            timestamp: '2024-01-14T09:15:00Z',
-            description: 'Package in transit - arrived at Chicago hub'
-          }
-        ]
+      if (isRefresh) {
+        setRefreshing(true)
+      } else {
+        setLoading(true)
+      }
+      setError('')
+      
+      const response = await fetch(`/api/shipments/${shipmentId}/tracking`)
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          setError('Shipment not found or you do not have access to track this shipment')
+        } else if (response.status === 401) {
+          setError('Please sign in to track shipments')
+        } else {
+          setError('Failed to load shipment details')
+        }
+        return
       }
       
-      setShipment(mockShipment)
+      const shipmentData = await response.json()
+      setShipment(shipmentData)
+      
+      if (isRefresh) {
+        showToast({
+          type: 'success',
+          title: 'Updated',
+          message: 'Tracking information refreshed'
+        })
+      }
     } catch (err) {
+      console.error('Error fetching shipment details:', err)
       setError('Failed to load shipment details')
       showToast({
         type: 'error',
@@ -106,6 +109,7 @@ export default function TrackingPage() {
       })
     } finally {
       setLoading(false)
+      setRefreshing(false)
     }
   }
 
@@ -192,12 +196,24 @@ export default function TrackingPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Shipment Tracking
-          </h1>
-          <p className="text-gray-600">
-            Track your shipment in real-time
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Shipment Tracking
+              </h1>
+              <p className="text-gray-600">
+                Track your shipment in real-time
+              </p>
+            </div>
+            <button
+              onClick={() => fetchShipmentDetails(true)}
+              disabled={refreshing}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            >
+              <ArrowPathIcon className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </div>
         </div>
 
         {/* Shipment Overview */}
@@ -300,20 +316,34 @@ export default function TrackingPage() {
         {/* Carrier Information */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Carrier Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <div className="font-medium text-gray-900">Carrier Name</div>
-              <div className="text-gray-600">{shipment.carrier.name}</div>
+          {shipment.carrier ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <div className="font-medium text-gray-900">Carrier Name</div>
+                <div className="text-gray-600">{shipment.carrier.name}</div>
+                {shipment.carrier.companyName && (
+                  <div className="text-sm text-gray-500">{shipment.carrier.companyName}</div>
+                )}
+              </div>
+              <div>
+                <div className="font-medium text-gray-900">Phone</div>
+                <div className="text-gray-600">{shipment.carrier.phone || 'Not provided'}</div>
+              </div>
+              <div>
+                <div className="font-medium text-gray-900">Email</div>
+                <div className="text-gray-600">{shipment.carrier.email}</div>
+              </div>
             </div>
-            <div>
-              <div className="font-medium text-gray-900">Phone</div>
-              <div className="text-gray-600">{shipment.carrier.phone}</div>
+          ) : (
+            <div className="text-center py-8">
+              <TruckIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h4 className="text-lg font-medium text-gray-900 mb-2">No Carrier Assigned</h4>
+              <p className="text-gray-600">
+                This shipment is still waiting for a carrier to be assigned. 
+                Once a carrier accepts the shipment, their information will appear here.
+              </p>
             </div>
-            <div>
-              <div className="font-medium text-gray-900">Email</div>
-              <div className="text-gray-600">{shipment.carrier.email}</div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

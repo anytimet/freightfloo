@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { shipmentId, amount, message } = await request.json()
+    console.log('Bid API called with:', { shipmentId, amount, message, userId: (session.user as any)?.id })
 
     // Check if shipment exists and is active
     const shipment = await prisma.shipment.findUnique({
@@ -92,6 +93,7 @@ export async function POST(request: NextRequest) {
 
     // For offer-type shipments, automatically accept the bid
     const bidStatus = shipment.pricingType === 'offer' ? 'ACCEPTED' : 'PENDING'
+    console.log('Shipment pricing type:', shipment.pricingType, 'Bid status will be:', bidStatus)
     
     // Use transaction to ensure atomicity
     const result = await prisma.$transaction(async (tx: any) => {
@@ -137,6 +139,7 @@ export async function POST(request: NextRequest) {
 
       // If this is an offer acceptance, update shipment status
       if (shipment.pricingType === 'offer') {
+        console.log('Updating shipment status to PENDING for offer acceptance')
         await tx.shipment.update({
           where: { id: shipmentId },
           data: {
@@ -144,6 +147,7 @@ export async function POST(request: NextRequest) {
             paymentStatus: 'PENDING'
           }
         })
+        console.log('Shipment status updated successfully')
       }
 
       return bid

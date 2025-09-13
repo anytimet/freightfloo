@@ -105,9 +105,15 @@ export default function ShipmentDetailPage({ params }: { params: { id: string } 
 
   const fetchShipment = async () => {
     try {
+      console.log('Fetching shipment data...')
       const response = await fetch(`/api/shipments/${params.id}`)
       if (response.ok) {
         const data = await response.json()
+        console.log('Shipment data received:', {
+          status: data.shipment.status,
+          paymentStatus: data.shipment.paymentStatus,
+          bids: data.shipment.bids.length
+        })
         setShipment(data.shipment)
         setDocuments(data.shipment.documents || [])
       } else {
@@ -126,11 +132,13 @@ export default function ShipmentDetailPage({ params }: { params: { id: string } 
     
     // Prevent multiple submissions
     if (submittingBid) {
+      console.log('Already submitting bid, ignoring click')
       return
     }
     
     setSubmittingBid(true)
     setBidError('')
+    console.log('Starting bid submission...')
 
     try {
       const bidData = {
@@ -151,11 +159,15 @@ export default function ShipmentDetailPage({ params }: { params: { id: string } 
       })
 
       if (response.ok) {
+        console.log('Bid submitted successfully, refreshing shipment data...')
         setShowBidForm(false)
         setBidAmount('')
         setBidMessage('')
         setBidError('')
-        fetchShipment() // Refresh to show new bid
+        // Add a small delay to ensure the database is updated
+        setTimeout(() => {
+          fetchShipment() // Refresh to show new bid and updated status
+        }, 500)
       } else {
         const data = await response.json()
         console.error('Bid submission error:', data)
@@ -417,6 +429,28 @@ export default function ShipmentDetailPage({ params }: { params: { id: string } 
               className="h-96"
             />
           </div>
+
+          {/* Tracking Link */}
+          {shipment.status === 'ASSIGNED' && (
+            <div className="mb-8">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-blue-900">Track Your Shipment</h3>
+                    <p className="text-blue-700 text-sm mt-1">
+                      Get real-time updates on your shipment's progress
+                    </p>
+                  </div>
+                  <a
+                    href={`/tracking/${shipment.id}`}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    View Tracking
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Status Tracking Section */}
           {shipment.status === 'ASSIGNED' && (
@@ -680,7 +714,7 @@ export default function ShipmentDetailPage({ params }: { params: { id: string } 
                     <button
                       type="submit"
                       disabled={submittingBid}
-                      className="btn-primary disabled:opacity-50"
+                      className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {submittingBid 
                         ? 'Processing...' 

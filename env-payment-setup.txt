@@ -1,0 +1,75 @@
+# 🔐 FreightFloo Payment System Environment Setup
+
+# ===========================================
+# STRIPE PAYMENT CONFIGURATION
+# ===========================================
+
+# Stripe Secret Key (Server-side)
+# Get this from: https://dashboard.stripe.com/apikeys
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+
+# Stripe Publishable Key (Client-side)
+# Get this from: https://dashboard.stripe.com/apikeys
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+
+# Stripe Webhook Secret
+# Get this from: https://dashboard.stripe.com/webhooks
+# After creating webhook endpoint: https://yourdomain.com/api/payments/webhook
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
+# ===========================================
+# EXISTING CONFIGURATION (Keep these)
+# ===========================================
+
+# NextAuth.js Configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key-here
+
+# Database
+# For development (SQLite)
+DATABASE_URL="file:./dev.db"
+# For production (PostgreSQL)
+# DATABASE_URL="postgresql://username:password@host:port/database"
+
+# ===========================================
+# EMAIL CONFIGURATION (For Payment Notifications)
+# ===========================================
+
+# Resend API Key (for email notifications)
+# Get this from: https://resend.com/api-keys
+RESEND_API_KEY=re_your_resend_api_key_here
+
+# ===========================================
+# SETUP INSTRUCTIONS
+# ===========================================
+
+# 1. Copy this file to .env.local
+# 2. Replace all placeholder values with your actual keys
+# 3. Get Stripe keys from: https://dashboard.stripe.com/apikeys
+# 4. Set up webhook endpoint: https://dashboard.stripe.com/webhooks
+# 5. Configure webhook URL: https://yourdomain.com/api/payments/webhook
+# 6. Select these webhook events:
+#    - payment_intent.succeeded
+#    - payment_intent.payment_failed
+#    - charge.dispute.created
+#    - charge.dispute.updated
+
+# ===========================================
+# TESTING
+# ===========================================
+
+# For local testing with webhooks:
+# 1. Install Stripe CLI: https://stripe.com/docs/stripe-cli
+# 2. Run: stripe listen --forward-to localhost:3000/api/payments/webhook
+# 3. Copy the webhook secret from CLI output
+# 4. Update STRIPE_WEBHOOK_SECRET in .env.local
+
+# ===========================================
+# SECURITY NOTES
+# ===========================================
+
+# - Never commit .env.local to version control
+# - Use test keys for development
+# - Use live keys only in production
+# - Keep webhook secrets secure
+# - Enable HTTPS in production

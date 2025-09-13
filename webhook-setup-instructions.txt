@@ -1,0 +1,35 @@
+# 🔗 Webhook Setup Instructions
+
+## Your Webhook Secret
+Copy this webhook secret to your .env.local file:
+
+STRIPE_WEBHOOK_SECRET=whsec_a2dba77571e13446332edf9eadddab4015ff7ec511fdce6fa0706f1dbbe55798
+
+## Complete Environment Variables for .env.local
+
+Add these to your .env.local file:
+
+```env
+# Stripe Configuration
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+STRIPE_WEBHOOK_SECRET=whsec_a2dba77571e13446332edf9eadddab4015ff7ec511fdce6fa0706f1dbbe55798
+
+# NextAuth.js Configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key-here
+
+# Database
+DATABASE_URL="file:./dev.db"
+
+# Email Configuration (Optional - for notifications)
+RESEND_API_KEY=re_your_resend_api_key_here
+```
+
+## Next Steps:
+
+1. Copy the webhook secret above to your .env.local file
+2. Get your Stripe API keys from: https://dashboard.stripe.com/apikeys
+3. Replace the placeholder values with your actual keys
+4. Restart your development server
+5. Test the webhook with: stripe trigger payment_intent.succeeded

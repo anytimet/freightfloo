@@ -31,7 +31,22 @@ export default function SignInPage() {
         // NextAuth.js returns generic error messages, so we'll use a general message
         setError('Invalid email or password')
       } else if (result?.ok) {
-        const redirectUrl = searchParams.get('redirect') || '/dashboard'
+        // Get the session to check user role and profile completion
+        const session = await getSession()
+        const userRole = (session?.user as any)?.role
+        
+        let redirectUrl = searchParams.get('redirect')
+        
+        if (!redirectUrl) {
+          if (userRole === 'CARRIER') {
+            // For carriers, check if they need to complete their profile
+            // For now, redirect to dashboard where they can complete their setup
+            redirectUrl = '/dashboard'
+          } else {
+            redirectUrl = '/dashboard'
+          }
+        }
+        
         router.push(redirectUrl)
       } else {
         setError('An unexpected error occurred. Please try again.')

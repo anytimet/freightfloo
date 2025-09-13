@@ -106,81 +106,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if payment already exists
-    const existingPayment = await prisma.payment.findFirst({
-      where: {
-        shipmentId,
-        bidId,
-        status: { in: ['PENDING', 'COMPLETED'] }
-      }
-    })
-
-    if (existingPayment) {
-      if (existingPayment.stripePaymentIntentId) {
-        // Return existing payment intent
-        const paymentIntent = await stripe.paymentIntents.retrieve(existingPayment.stripePaymentIntentId)
-        return NextResponse.json({
-          clientSecret: paymentIntent.client_secret,
-          paymentId: existingPayment.id
-        })
-      } else {
-        // Payment exists but no Stripe intent, create a new one
-        const paymentIntent = await stripe.paymentIntents.create({
-          amount: formatAmountForStripe(bid.amount, 'USD'),
-          currency: 'usd',
-          metadata: {
-            paymentId: existingPayment.id,
-            shipmentId,
-            bidId,
-            userId: (session.user as any).id
-          },
-          description: `FreightFloo payment for shipment: ${shipment.title}`,
-          automatic_payment_methods: {
-            enabled: true,
-          },
-        })
-
-        // Update payment with Stripe Payment Intent ID
-        await prisma.payment.update({
-          where: { id: existingPayment.id },
-          data: { stripePaymentIntentId: paymentIntent.id }
-        })
-
-        return NextResponse.json({
-          clientSecret: paymentIntent.client_secret,
-          paymentId: existingPayment.id
-        })
-      }
-    }
-
-    // Create payment record
-    const payment = await prisma.payment.create({
-      data: {
-        amount: bid.amount,
-        currency: 'USD',
-        status: 'PENDING',
-        description: `Payment for shipment: ${shipment.title}`,
-        metadata: JSON.stringify({
-          shipmentId,
-          bidId,
-          carrierId: bid.userId,
-          carrierName: bid.user.name
-        }),
-        userId: (session.user as any).id,
-        shipmentId,
-        bidId
-      }
-    })
-
-    // Create Stripe Payment Intent
+    // Create Stripe Payment Intent first (no database record yet)
     const paymentIntent = await stripe.paymentIntents.create({
       amount: formatAmountForStripe(bid.amount, 'USD'),
       currency: 'usd',
       metadata: {
-        paymentId: payment.id,
         shipmentId,
         bidId,
-        userId: (session.user as any).id
+        userId: (session.user as any).id,
+        shipperEmail: shipment.user.email,
+        carrierEmail: bid.user.email
       },
       description: `FreightFloo payment for shipment: ${shipment.title}`,
       automatic_payment_methods: {
@@ -188,15 +123,9 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Update payment with Stripe Payment Intent ID
-    await prisma.payment.update({
-      where: { id: payment.id },
-      data: { stripePaymentIntentId: paymentIntent.id }
-    })
-
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
-      paymentId: payment.id
+      paymentIntentId: paymentIntent.id
     })
   } catch (error) {
     console.error('Create payment intent error:', error)

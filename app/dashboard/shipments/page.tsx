@@ -61,10 +61,22 @@ export default function ShipperShipmentsPage() {
       const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
-        setShipments(data)
+        // Ensure data is an array
+        if (Array.isArray(data)) {
+          setShipments(data)
+        } else if (data.shipments && Array.isArray(data.shipments)) {
+          setShipments(data.shipments)
+        } else {
+          console.error('Unexpected data format:', data)
+          setShipments([])
+        }
+      } else {
+        console.error('Failed to fetch shipments:', response.status)
+        setShipments([])
       }
     } catch (error) {
       console.error('Error fetching shipments:', error)
+      setShipments([])
     } finally {
       setLoading(false)
     }
@@ -187,7 +199,7 @@ export default function ShipperShipmentsPage() {
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {shipments.map((shipment) => (
+              {Array.isArray(shipments) && shipments.map((shipment) => (
                 <div key={shipment.id} className="p-6 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">

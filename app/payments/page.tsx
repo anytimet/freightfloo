@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { CreditCardIcon, CheckCircleIcon, XCircleIcon, ClockIcon } from '@heroicons/react/24/outline'
+import { CreditCardIcon, CheckCircleIcon, XCircleIcon, ClockIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import Navigation from '@/components/Navigation'
+import RefundForm from '@/components/RefundForm'
 
 interface Payment {
   id: string
@@ -33,6 +34,9 @@ export default function PaymentsPage() {
   const router = useRouter()
   const [payments, setPayments] = useState<Payment[]>([])
   const [loading, setLoading] = useState(true)
+  const [showRefundForm, setShowRefundForm] = useState(false)
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null)
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     if (session) {
@@ -54,6 +58,22 @@ export default function PaymentsPage() {
     }
   }
 
+  const handleRefundRequest = (payment: Payment) => {
+    setSelectedPayment(payment)
+    setShowRefundForm(true)
+  }
+
+  const handleRefundSuccess = () => {
+    setMessage('Refund request submitted successfully!')
+    fetchPayments() // Refresh payments list
+    setTimeout(() => setMessage(''), 5000)
+  }
+
+  const handleRefundError = (error: string) => {
+    setMessage(`Refund error: ${error}`)
+    setTimeout(() => setMessage(''), 5000)
+  }
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'COMPLETED':
@@ -62,6 +82,8 @@ export default function PaymentsPage() {
         return <XCircleIcon className="h-5 w-5 text-red-500" />
       case 'PENDING':
         return <ClockIcon className="h-5 w-5 text-yellow-500" />
+      case 'REFUNDED':
+        return <ArrowPathIcon className="h-5 w-5 text-blue-500" />
       default:
         return <CreditCardIcon className="h-5 w-5 text-gray-500" />
     }
@@ -75,6 +97,8 @@ export default function PaymentsPage() {
         return 'bg-red-100 text-red-800'
       case 'PENDING':
         return 'bg-yellow-100 text-yellow-800'
+      case 'REFUNDED':
+        return 'bg-blue-100 text-blue-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -124,6 +148,16 @@ export default function PaymentsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Payment History</h1>
           <p className="mt-2 text-gray-600">View all your payment transactions</p>
         </div>
+
+        {message && (
+          <div className={`mb-6 p-4 rounded-md ${
+            message.includes('error') || message.includes('Error')
+              ? 'bg-red-50 text-red-700 border border-red-200'
+              : 'bg-green-50 text-green-700 border border-green-200'
+          }`}>
+            {message}
+          </div>
+        )}
 
         {payments.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
@@ -188,12 +222,22 @@ export default function PaymentsPage() {
                         {formatDate(payment.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => router.push(`/shipment/${payment.shipment.id}`)}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          View Shipment
-                        </button>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => router.push(`/shipment/${payment.shipment.id}`)}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            View Shipment
+                          </button>
+                          {payment.status === 'COMPLETED' && (
+                            <button
+                              onClick={() => handleRefundRequest(payment)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Request Refund
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -203,6 +247,19 @@ export default function PaymentsPage() {
           </div>
         )}
       </div>
+
+      {showRefundForm && selectedPayment && (
+        <RefundForm
+          paymentId={selectedPayment.id}
+          maxAmount={selectedPayment.amount}
+          onSuccess={handleRefundSuccess}
+          onError={handleRefundError}
+          onClose={() => {
+            setShowRefundForm(false)
+            setSelectedPayment(null)
+          }}
+        />
+      )}
     </div>
   )
 }
