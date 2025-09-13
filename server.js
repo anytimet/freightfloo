@@ -1,6 +1,7 @@
 const { createServer } = require('http')
 const { parse } = require('url')
 const next = require('next')
+const { execSync } = require('child_process')
 
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = '0.0.0.0'
@@ -12,6 +13,16 @@ console.log('PORT:', process.env.PORT)
 console.log('Parsed port:', port)
 console.log('Hostname:', hostname)
 console.log('Dev mode:', dev)
+
+// Setup database
+console.log('Setting up database...')
+try {
+  execSync('pnpm prisma db push', { stdio: 'inherit' })
+  console.log('Database setup completed')
+} catch (error) {
+  console.error('Database setup failed:', error)
+  // Continue anyway, the app might still work
+}
 
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port })

@@ -26,7 +26,7 @@ RUN pnpm prisma generate
 RUN pnpm build
 
 # Copy startup script
-COPY start.sh /app/start.sh
+COPY start-nextjs.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
 # Expose port (Cloud Run uses PORT environment variable)
