@@ -25,8 +25,12 @@ RUN pnpm prisma generate
 # Build the application
 RUN pnpm build
 
-# Copy startup script
-COPY start-nextjs.sh /app/start.sh
+# Set up database during build
+RUN pnpm prisma db push
+
+# Copy startup script and test server
+COPY start-test.sh /app/start.sh
+COPY test-server.js /app/test-server.js
 RUN chmod +x /app/start.sh
 
 # Expose port (Cloud Run uses PORT environment variable)
