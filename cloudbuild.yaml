@@ -19,7 +19,7 @@ steps:
       - "--max-instances"
       - "10"
       - "--set-env-vars"
-      - "NODE_ENV=production,NEXTAUTH_SECRET=aoIvyahpA5v2QlNP5FGaieNbRCj4iDNJm8rFGKJZdHNrVLMaiUakt+Z2IQU="
+      - "NODE_ENV=production,PORT=8080,NEXTAUTH_SECRET=aoIvyahpA5v2QlNP5FGaieNbRCj4iDNJm8rFGKJZdHNrVLMaiUakt+Z2IQU="
       - "--set-secrets"
       - "DATABASE_URL=DATABASE_URL:latest,RESEND_API_KEY=RESEND_API_KEY:latest"
 
