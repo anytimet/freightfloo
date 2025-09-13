@@ -13,7 +13,7 @@ steps:
       - "europe-west1"
       - "--allow-unauthenticated"
       - "--port"
-      - "3000"
+      - "8080"
       - "--min-instances"
       - "1"
       - "--max-instances"

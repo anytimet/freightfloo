@@ -7,6 +7,6 @@ echo "Starting FreightFloo application..."
 echo "Setting up SQLite database..."
 pnpm prisma db push
 
-# Start the application
-echo "Starting Next.js application..."
-exec pnpm start
+# Start the application on the port specified by Cloud Run
+echo "Starting Next.js application on port ${PORT:-8080}..."
+exec pnpm start -- -p ${PORT:-8080}

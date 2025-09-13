@@ -29,11 +29,12 @@ RUN pnpm build
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
-# Expose port
-EXPOSE 3000
+# Expose port (Cloud Run uses PORT environment variable)
+EXPOSE 8080
 
 # Set environment variable for production
 ENV NODE_ENV=production
+ENV PORT=8080
 
 # Start the application
 CMD ["/app/start.sh"]
