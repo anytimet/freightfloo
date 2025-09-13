@@ -6,11 +6,19 @@ const dev = process.env.NODE_ENV !== 'production'
 const hostname = '0.0.0.0'
 const port = parseInt(process.env.PORT || '8080', 10)
 
+console.log('Environment variables:')
+console.log('NODE_ENV:', process.env.NODE_ENV)
+console.log('PORT:', process.env.PORT)
+console.log('Parsed port:', port)
+console.log('Hostname:', hostname)
+console.log('Dev mode:', dev)
+
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
 
 app.prepare().then(() => {
+  console.log('Next.js app prepared successfully')
   createServer(async (req, res) => {
     try {
       // Be sure to pass `true` as the second argument to `url.parse`.
@@ -26,10 +34,13 @@ app.prepare().then(() => {
     }
   })
     .once('error', (err) => {
-      console.error(err)
+      console.error('Server error:', err)
       process.exit(1)
     })
     .listen(port, hostname, () => {
       console.log(`> Ready on http://${hostname}:${port}`)
     })
+}).catch((ex) => {
+  console.error('Failed to prepare Next.js app:', ex)
+  process.exit(1)
 })
