@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateEnvironment, getEnvironmentInfo } from '@/lib/env-validation'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     // Validate environment configuration

@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma'
 import { sendEmail, createEmailTemplate } from '@/lib/email'
 import { trackBidPlaced } from '@/lib/analytics'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-echo "=== Fast FreightFloo Startup ==="
+echo "=== Fast FreightFloo Startup v2 ==="
 echo "NODE_ENV: $NODE_ENV"
 echo "PORT: $PORT"
 

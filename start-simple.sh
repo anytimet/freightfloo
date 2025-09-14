@@ -1,18 +1,32 @@
-#!/bin/sh
-set -e
+#!/bin/bash
 
-echo "=== Simple FreightFloo Startup Script ==="
-echo "Current directory: $(pwd)"
-echo "Environment variables:"
+echo "=== Simple FreightFloo Startup ==="
 echo "NODE_ENV: $NODE_ENV"
 echo "PORT: $PORT"
 
-echo "=== Setting up database in background ==="
-pnpm prisma db push &
-
-echo "=== Starting Next.js application ==="
+# Set default port
 export PORT=${PORT:-8080}
-echo "Final PORT: $PORT"
+echo "Using PORT: $PORT"
 
-echo "=== Starting Next.js with: next start -p $PORT ==="
-exec npx next start -p $PORT
+# Set fallback DATABASE_URL if not provided
+if [ -z "$DATABASE_URL" ]; then
+  echo "WARNING: DATABASE_URL not set, using SQLite fallback"
+  export DATABASE_URL="file:./dev.db"
+fi
+
+echo "DATABASE_URL: $DATABASE_URL"
+
+# List directory contents for debugging
+echo "Directory contents:"
+ls -la
+
+# Check if .next exists
+if [ ! -d ".next" ]; then
+  echo "ERROR: .next directory not found!"
+  echo "Running build..."
+  npm run build
+fi
+
+# Start the server
+echo "Starting Next.js server..."
+node_modules/.bin/next start -p $PORT --hostname 0.0.0.0
