@@ -42,7 +42,7 @@ steps:
       - "--concurrency"
       - "80"
       - "--set-env-vars"
-      - "NODE_ENV=production,PORT=8080,DATABASE_URL=file:./dev.db"
+      - "NODE_ENV=production,DATABASE_URL=file:./dev.db"
       - "--set-secrets"
       - "RESEND_API_KEY=RESEND_API_KEY:latest,NEXTAUTH_SECRET=NEXTAUTH_SECRET:latest"
 
