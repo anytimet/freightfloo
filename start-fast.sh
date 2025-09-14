@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-echo "=== FreightFloo Startup ==="
+echo "=== Fast FreightFloo Startup ==="
 echo "NODE_ENV: $NODE_ENV"
 echo "PORT: $PORT"
 
@@ -9,10 +9,6 @@ echo "PORT: $PORT"
 export PORT=${PORT:-8080}
 echo "Using PORT: $PORT"
 
-# Setup database in background (non-blocking)
-echo "Setting up database in background..."
-pnpm prisma db push &
-
-# Start Next.js immediately
+# Start Next.js immediately (database will be created on first use)
 echo "Starting Next.js..."
 exec npx next start -p $PORT
