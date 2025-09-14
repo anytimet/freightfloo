@@ -42,11 +42,9 @@ steps:
       - "--concurrency"
       - "80"
       - "--set-env-vars"
-      - "NODE_ENV=production,PORT=8080"
-      - "--add-cloudsql-instances"
-      - "freightfloo-v4:europe-west1:freightfloo-db"
+      - "NODE_ENV=production,PORT=8080,DATABASE_URL=file:./dev.db"
       - "--set-secrets"
-      - "DATABASE_URL=DATABASE_URL:latest,RESEND_API_KEY=RESEND_API_KEY:latest,NEXTAUTH_SECRET=NEXTAUTH_SECRET:latest"
+      - "RESEND_API_KEY=RESEND_API_KEY:latest,NEXTAUTH_SECRET=NEXTAUTH_SECRET:latest"
 
 options:
   logging: CLOUD_LOGGING_ONLY
