@@ -1,0 +1,48 @@
+steps:
+  # Build the container
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "europe-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/freightfloo/freightfloo:$COMMIT_SHA"
+      - "."
+
+  # Push the container
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "europe-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/freightfloo/freightfloo:$COMMIT_SHA"
+
+  # Deploy to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "freightfloo"
+      - "--image"
+      - "europe-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/freightfloo/freightfloo:$COMMIT_SHA"
+      - "--platform"
+      - "managed"
+      - "--region"
+      - "europe-west1"
+      - "--allow-unauthenticated"
+      - "--port"
+      - "8080"
+      - "--min-instances"
+      - "1"
+      - "--max-instances"
+      - "10"
+      - "--timeout"
+      - "900"
+      - "--memory"
+      - "2Gi"
+      - "--cpu"
+      - "2"
+      - "--concurrency"
+      - "80"
+      - "--set-env-vars"
+      - "NODE_ENV=production,DATABASE_URL=file:./dev.db,RESEND_API_KEY=re_1234567890,NEXTAUTH_SECRET=aoIvyahpA5v2QlNP5FGaieNbRCj4iDNJm8rFGKJZdHNrVLMaiUakt+Z2IQU="
+
+options:
+  logging: CLOUD_LOGGING_ONLY
