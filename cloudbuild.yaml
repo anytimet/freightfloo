@@ -41,8 +41,10 @@ steps:
       - "2"
       - "--concurrency"
       - "80"
+      - "--add-cloudsql-instances"
+      - "freightfloo-v4:europe-west1:freightfloo-db"
       - "--set-env-vars"
-      - "NODE_ENV=production,DATABASE_URL=file:./dev.db,RESEND_API_KEY=re_1234567890,NEXTAUTH_SECRET=aoIvyahpA5v2QlNP5FGaieNbRCj4iDNJm8rFGKJZdHNrVLMaiUakt+Z2IQU="
+      - "NODE_ENV=production,DATABASE_URL=postgresql://freightfloo_user:_SVA%2Cf%3AhxM52%25dSq@/freightfloo?host=/cloudsql/freightfloo-v4:europe-west1:freightfloo-db,RESEND_API_KEY=re_UZJ4Dw7J_MUxwbJE94K4mnAzPzHAZBQC2,NEXTAUTH_SECRET=aoIvyahpA5v2QlNP5FGaieNbRCj4iDNJm8rFGKJZdHNrVLMaiUakt+Z2IQU="
 
 options:
   logging: CLOUD_LOGGING_ONLY
