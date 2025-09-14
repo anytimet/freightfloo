@@ -35,7 +35,6 @@ EXPOSE 8080
 
 # Set environment variable for production
 ENV NODE_ENV=production
-ENV PORT=8080
 
 # Start the application
 CMD ["/app/start.sh"]
